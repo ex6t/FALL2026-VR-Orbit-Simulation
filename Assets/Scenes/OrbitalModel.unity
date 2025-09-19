@@ -642,7 +642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 26940
+  GUIID: 42892
 --- !u!1001 &208079912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -933,7 +933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 26964
+  GUIID: 42916
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -1738,7 +1738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27008
+  GUIID: 42960
 --- !u!1001 &574775552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2715,7 +2715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27086
+  GUIID: 43038
 --- !u!1 &1031570123
 GameObject:
   m_ObjectHideFlags: 0
@@ -8819,17 +8819,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 760681113230105503, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 686a0e8b345e3414bb9b4270e3f52a12, type: 2}
     - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalScale.x
-      value: 25
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalScale.y
-      value: 25
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalScale.z
-      value: 25
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 3639908707121217233, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8911,6 +8915,10 @@ PrefabInstance:
       propertyPath: simulationSpeed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7293952001671927295, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: b82e0d2b8cc9ee64cacfa0b6e51ff1a3, type: 3}
     - target: {fileID: 7549666945957691126, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_Name
       value: Master Controller
