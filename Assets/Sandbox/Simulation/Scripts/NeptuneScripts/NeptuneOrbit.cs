@@ -8,7 +8,7 @@ public class NeptuneOrbit : MonoBehaviour
     SimulationController simuControl;
 
     public OverlayFeed NeptuneDataFeed;
-    public float NeptuneOrbitDuration = 165f; // Neptune Year in Earth Days
+    public float NeptuneOrbitDuration = 60190f; // Neptune Takes About 165 Earth Years To Orbit The Sun
     public float NeptuneRadius = 50f * 30f; // Neptune's Raidus Compared To Earth
     public float NeptuneEccentricity = 0.0086f; 
 
