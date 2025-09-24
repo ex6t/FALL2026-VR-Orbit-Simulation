@@ -8,7 +8,7 @@ public class UranusOrbit : MonoBehaviour
     SimulationController simuControl;
 
     public OverlayFeed UranusDataFeed;
-    public float UranusOrbitDuration = 84.01f; // Uranus Year in Earth Days
+    public float UranusOrbitDuration = 30687f; // Uranus Takes About 84 Earth Years To Orbit The Sun
     public float UranusRadius = 50f * 19f; // Uranus' Raidus Compared To Earth
     public float UranusEccentricity = 0.047f;
 

@@ -8,7 +8,7 @@ public class JupiterOrbit : MonoBehaviour
     SimulationController simuControl;
 
     public OverlayFeed JupiterDataFeed;
-    public float JupiterOrbitDuration = 4333f; // Jupiter Year in Earth Days
+    public float JupiterOrbitDuration = 4330.6f; // Jupiter Takes About 12 Earth Years To Orbit The Sun
     public float JupiterRadius = 50f * 5.2f; // Jupiter's Raidus Compared To Earth
     public float JupiterEccentricity = 0.0489f; 
 
