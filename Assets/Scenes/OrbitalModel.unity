@@ -912,7 +912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27070
+  GUIID: 27148
 --- !u!1001 &208079912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1401,7 +1401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27112
+  GUIID: 27190
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -2720,7 +2720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27176
+  GUIID: 27258
 --- !u!1001 &574775552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4463,7 +4463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27298
+  GUIID: 27382
 --- !u!1 &1029729566
 GameObject:
   m_ObjectHideFlags: 0
@@ -6458,9 +6458,9 @@ GameObject:
   - component: {fileID: 1292208423}
   - component: {fileID: 1292208422}
   - component: {fileID: 1292208421}
-  - component: {fileID: 1292208420}
   - component: {fileID: 1292208419}
   - component: {fileID: 1292208418}
+  - component: {fileID: 1292208425}
   m_Layer: 0
   m_Name: Jupiter
   m_TagString: Untagged
@@ -6500,23 +6500,6 @@ MonoBehaviour:
   JupiterXRadius: 260
   JupiterYRadius: 208
   JupiterConstantOrbit: 1
---- !u!114 &1292208420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292208417}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!135 &1292208421
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -6604,6 +6587,22 @@ Transform:
   - {fileID: 456271675}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1292208425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292208417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab703634b7bc8a4388ea47ae23409a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 0.41375
+  masterControl: {fileID: 2081311512}
+  direction: 1
 --- !u!4 &1298929431 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000014195058408, guid: 88075a54c7fb1484ba25db394b612917, type: 3}
