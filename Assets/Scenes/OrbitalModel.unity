@@ -912,7 +912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27148
+  GUIID: 27166
 --- !u!1001 &208079912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1401,7 +1401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27190
+  GUIID: 27208
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -2720,7 +2720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27258
+  GUIID: 27276
 --- !u!1001 &574775552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3378,7 +3378,7 @@ PrefabInstance:
     - target: {fileID: 2300000, guid: 8aa4a8814028a42fea37772e41f89781, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: e35abc06097ca4fcda800d7ee918a9cb, type: 2}
+      objectReference: {fileID: 2100000, guid: d6681239dbee46743808f367b5c3ce5e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3571,7 +3571,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 20
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -4463,7 +4463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27382
+  GUIID: 27400
 --- !u!1 &1029729566
 GameObject:
   m_ObjectHideFlags: 0
@@ -5670,7 +5670,7 @@ GameObject:
   - component: {fileID: 1127730733}
   - component: {fileID: 1127730732}
   - component: {fileID: 1127730731}
-  - component: {fileID: 1127730730}
+  - component: {fileID: 1127730737}
   m_Layer: 0
   m_Name: Neptune
   m_TagString: Untagged
@@ -5678,23 +5678,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1127730730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1127730729}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!114 &1127730731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5814,6 +5797,22 @@ Transform:
   - {fileID: 1492183597}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1127730737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127730729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47afa1ed19fc9124dba0e298ba8b9bd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 0.67125
+  masterControl: {fileID: 2081311512}
+  direction: 1
 --- !u!1 &1134899293
 GameObject:
   m_ObjectHideFlags: 0
@@ -5827,7 +5826,7 @@ GameObject:
   - component: {fileID: 1134899297}
   - component: {fileID: 1134899296}
   - component: {fileID: 1134899295}
-  - component: {fileID: 1134899294}
+  - component: {fileID: 1134899300}
   m_Layer: 0
   m_Name: Pluto
   m_TagString: Untagged
@@ -5835,23 +5834,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1134899294
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1134899293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!114 &1134899295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5959,6 +5941,22 @@ Transform:
   - {fileID: 732981765}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1134899300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1134899293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ce4134d7ad5794fbd3f646e5f0b448, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 6.3872
+  masterControl: {fileID: 2081311512}
+  direction: 1
 --- !u!43 &1187203445
 Mesh:
   m_ObjectHideFlags: 0
@@ -6320,6 +6318,7 @@ GameObject:
   - component: {fileID: 1291040573}
   - component: {fileID: 1291040578}
   - component: {fileID: 1291040577}
+  - component: {fileID: 1291040579}
   m_Layer: 0
   m_Name: Venus
   m_TagString: Untagged
@@ -6446,6 +6445,22 @@ MonoBehaviour:
   VenusXRadius: 36
   VenusYRadius: 28.800001
   VenusConstantOrbit: 1
+--- !u!114 &1291040579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291040572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 259a0886974b52e43bd007815391564a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 243.0226
+  masterControl: {fileID: 2081311512}
+  direction: -1
 --- !u!1 &1292208417
 GameObject:
   m_ObjectHideFlags: 0
@@ -6621,8 +6636,8 @@ GameObject:
   - component: {fileID: 1302705666}
   - component: {fileID: 1302705665}
   - component: {fileID: 1302705664}
-  - component: {fileID: 1302705663}
   - component: {fileID: 1302705662}
+  - component: {fileID: 1302705669}
   m_Layer: 0
   m_Name: Mercury
   m_TagString: Untagged
@@ -6650,23 +6665,6 @@ MonoBehaviour:
   MercuryXRadius: 20
   MercuryYRadius: 16
   MercuryConstantOrbit: 1
---- !u!114 &1302705663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302705661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!114 &1302705664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6766,6 +6764,22 @@ Transform:
   - {fileID: 1902750162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1302705669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302705661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8385b6e548a6df4cba60dadf082d4a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 58.6461
+  masterControl: {fileID: 2081311512}
+  direction: 1
 --- !u!1001 &1317584469
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7913,9 +7927,9 @@ GameObject:
   - component: {fileID: 1668834112}
   - component: {fileID: 1668834111}
   - component: {fileID: 1668834110}
-  - component: {fileID: 1668834109}
   - component: {fileID: 1668834108}
   - component: {fileID: 1668834107}
+  - component: {fileID: 1668834114}
   m_Layer: 0
   m_Name: Saturn
   m_TagString: Untagged
@@ -7955,23 +7969,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f39916b1fb657b4097fc51c40b23ade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1668834109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1668834106}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!135 &1668834110
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -8060,6 +8057,22 @@ Transform:
   - {fileID: 2039615567}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1668834114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668834106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f289a135f417fd34fad46d446167c3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 0.44416
+  masterControl: {fileID: 2081311512}
+  direction: 1
 --- !u!1 &1689277776 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1292968828426186863, guid: 6bda14c3841e05746ba77ce8f6f04d5f, type: 3}
@@ -8565,7 +8578,12 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6118052407722757343, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
   m_PrefabInstance: {fileID: 8179839206513413499}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1840899518
+--- !u!4 &1840899519 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+  m_PrefabInstance: {fileID: 8179839206513413499}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1840899520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8574,19 +8592,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1840899511}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d5293c8d4f87054aad3afd9cb9799f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 1350380101}
+  rotationDuration: 1.015
+  masterControl: {fileID: 2081311512}
   direction: 1
-  directionChangeSpeed: 2
---- !u!4 &1840899519 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
-  m_PrefabInstance: {fileID: 8179839206513413499}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1902750161
 GameObject:
   m_ObjectHideFlags: 0
@@ -9704,8 +9716,8 @@ GameObject:
   - component: {fileID: 2047043644}
   - component: {fileID: 2047043643}
   - component: {fileID: 2047043642}
-  - component: {fileID: 2047043641}
   - component: {fileID: 2047043640}
+  - component: {fileID: 2047043647}
   m_Layer: 0
   m_Name: Uranus
   m_TagString: Untagged
@@ -9733,23 +9745,6 @@ MonoBehaviour:
   UranusXRadius: 950
   UranusYRadius: 760
   UranusConstantOrbit: 1
---- !u!114 &2047043641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047043639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34c20de9ecc8bde41b5ed3a66a8071a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinning: 1
-  rotationDuration: 1
-  masterControl: {fileID: 2081311512}
-  direction: 1
-  directionChangeSpeed: 2
 --- !u!114 &2047043642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9849,6 +9844,22 @@ Transform:
   - {fileID: 1921878256}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2047043647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047043639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 748ec46fd8a9dee45a56aef621b24091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinning: 1
+  rotationDuration: 0.7183
+  masterControl: {fileID: 2081311512}
+  direction: -1
 --- !u!1 &2064855776
 GameObject:
   m_ObjectHideFlags: 0
@@ -12838,7 +12849,7 @@ PrefabInstance:
       addedObject: {fileID: 2081311519}
     - targetCorrespondingSourceObject: {fileID: 6118052407722757343, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1840899518}
+      addedObject: {fileID: 1840899520}
   m_SourcePrefab: {fileID: 100100000, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
 --- !u!114 &8179839206513413500 stripped
 MonoBehaviour:

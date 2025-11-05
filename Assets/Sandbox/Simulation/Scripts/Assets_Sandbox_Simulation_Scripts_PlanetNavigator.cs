@@ -43,6 +43,8 @@ public class PlanetNavigator : MonoBehaviour
     private bool navigationActive = false;
 
     // store references so we can restore them when exiting planet view
+    private List<Camera> planetCameras = new List<Camera>();
+    //private Camera activePlanetCamera = null;
     private Camera[] disabledHmdCameras = null;
     private AudioListener disabledHmdAudioListener = null;
 
@@ -57,56 +59,105 @@ public class PlanetNavigator : MonoBehaviour
 
     void Start()
     {
-        // Hide UI on start
-        if (planetCanvas != null)
-            planetCanvas.gameObject.SetActive(false);
+        // Log the planets list so you can verify ordering / assigned objects (lightweight)
+        if (planetTransforms == null || planetTransforms.Count == 0)
+        {
+            Debug.LogError("[PlanetNavigator] planetTransforms is empty. Assign planet root Transforms in the Inspector.");
+            return;
+        }
 
-        // Hook up buttons (if assigned)
+        Debug.Log("[PlanetNavigator] Planet list:");
+        for (int i = 0; i < planetTransforms.Count; i++)
+        {
+            var t = planetTransforms[i];
+            Debug.LogFormat("  Index {0}: {1} (obj={2})", i, (t != null ? t.name : "NULL"), t);
+        }
+
+        // collect planet cameras (one per planet) and disable them (no duplicate watchers)
+        planetCameras.Clear();
+        if (planetTransforms != null)
+        {
+            foreach (var t in planetTransforms)
+            {
+                if (t == null)
+                {
+                    planetCameras.Add(null);
+                    continue;
+                }
+
+                // Primary lookup: any Camera component in children (includes inactive)
+                Camera cam = t.GetComponentInChildren<Camera>(true);
+
+                // Fallback #1: find a GameObject named "<PlanetName>Camera" anywhere in the scene
+                if (cam == null)
+                {
+                    string fallbackName = t.name + "Camera";
+                    var go = GameObject.Find(fallbackName);
+                    if (go != null)
+                    {
+                        cam = go.GetComponent<Camera>();
+                        if (cam != null)
+                            Debug.LogFormat("[PlanetNavigator] Found camera by GameObject.Find(\"{0}\") for planet '{1}'", fallbackName, t.name);
+                    }
+                }
+
+                // Fallback #2: search for any Camera in scene whose name contains the planet name (case-insensitive)
+                if (cam == null)
+                {
+                    Camera[] allCams = GameObject.FindObjectsOfType<Camera>(true);
+                    foreach (var c in allCams)
+                    {
+                        if (c == null || c.gameObject == null) continue;
+                        if (c.name.ToLower().Contains(t.name.ToLower()))
+                        {
+                            cam = c;
+                            Debug.LogFormat("[PlanetNavigator] Found camera by name-contains ('{0}') for planet '{1}' -> camera '{2}'", t.name, t.name, c.name);
+                            break;
+                        }
+                    }
+                }
+
+                // store result and ensure it's initially disabled
+                planetCameras.Add(cam);
+                if (cam != null)
+                {
+                    // Ensure no duplicate Watcher: only add if not already present
+                    var existingWatcher = cam.GetComponent<PlanetCameraActivationWatcher>();
+                    if (existingWatcher == null)
+                    {
+                        // Add a lightweight watcher for debug purposes (optional)
+                        cam.gameObject.AddComponent<PlanetCameraActivationWatcher>().parentName = t.name;
+                    }
+
+                    if (cam.gameObject.activeSelf)
+                    {
+                        // Start with cameras disabled
+                        cam.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarningFormat("[PlanetNavigator] No Camera found under planet Transform '{0}'. Expected a child Camera or a GameObject named '{0}Camera'.", t.name);
+                }
+            }
+        }
+
+        // Hide UI canvas initially
+        if (planetCanvas != null)
+        {
+            planetCanvas.gameObject.SetActive(false);
+        }
+
+        // Hook up button listeners if not already done in inspector
         if (nextButton != null) nextButton.onClick.AddListener(OnNextPlanet);
         if (prevButton != null) prevButton.onClick.AddListener(OnPrevPlanet);
         if (returnToShipButton != null) returnToShipButton.onClick.AddListener(ReturnToShip);
 
-        // Ensure there's an EventSystem so UI buttons can be clicked in desktop play
-        if (EventSystem.current == null)
-        {
-            var esGO = new GameObject("EventSystem");
-            esGO.AddComponent<EventSystem>();
-            esGO.AddComponent<StandaloneInputModule>();
-            Debug.Log("[PlanetNavigator] Created missing EventSystem for UI interaction.");
-        }
-
-        // Ensure all planet cameras are turned off at start (defensive)
-        if (planetTransforms != null)
-        {
-            Debug.Log("[PlanetNavigator] Start: scanning planetTransforms for child cameras and attaching parent watchers.");
-            foreach (var t in planetTransforms)
-            {
-                if (t == null) continue;
-                Camera cam = t.GetComponentInChildren<Camera>(true);
-                if (cam != null)
-                {
-                    Debug.Log($"  Planet '{t.name}': child Camera '{cam.name}' at path '{GetHierarchyPath(cam.transform)}' (activeSelf={cam.gameObject.activeSelf}).");
-                    // attach a parent-change watcher so we can detect reparenting at runtime
-                    var watcher = cam.gameObject.GetComponent<PlanetCameraParentWatcher>();
-                    if (watcher == null)
-                        watcher = cam.gameObject.AddComponent<PlanetCameraParentWatcher>();
-                    watcher.Initialize(GetHierarchyPath(cam.transform));
-                    // attach an activation watcher so we can see who enables the camera GameObject at runtime
-                    var actWatcher = cam.gameObject.GetComponent<PlanetCameraActivationWatcher>();
-                    if (actWatcher == null)
-                        actWatcher = cam.gameObject.AddComponent<PlanetCameraActivationWatcher>();
-                    actWatcher.Initialize(GetHierarchyPath(cam.transform));
-                    // Force-disable all planet cameras at Start to ensure a consistent initial state
-                    cam.enabled = false;
-                    if (cam.gameObject.activeSelf)
-                        cam.gameObject.SetActive(false);
-                }
-                else
-                {
-                    Debug.LogWarning($"  Planet '{t.name}': no child Camera found at Start.");
-                }
-            }
-        }
+        // Ensure previous state cleaned
+        activePlanetCamera = null;
+        disabledHmdCameras = null;
+        disabledHmdAudioListener = null;
+        currentPlanetIndex = -1;
     }
 
     // small helper to get readable path used by logs (we declare it here to keep file self-contained)
@@ -504,33 +555,19 @@ public class PlanetNavigator : MonoBehaviour
     // Watcher that logs when a camera GameObject becomes enabled/disabled so we can trace who activated it
     private class PlanetCameraActivationWatcher : MonoBehaviour
     {
-        private string initialPath;
-        public void Initialize(string path)
-        {
-            initialPath = path;
-        }
+        // optional: store parent name for clearer logs
+        public string parentName;
 
         void OnEnable()
         {
-            UnityEngine.Debug.LogError($"[PlanetNavigator][ActivationWatcher] GameObject enabled: '{gameObject.name}' path='{initialPath}' currentParent='{(transform.parent? GetPath(transform.parent): "<null>")}'. Stack:\n{Environment.StackTrace}", this);
+            // Keep this extremely cheap to avoid lag. Only log a simple message (no stack traces).
+            Debug.LogFormat("[PlanetNavigator][ActivationWatcher] Camera enabled: '{0}' parent='{1}'", gameObject.name, parentName ?? "(unknown)");
         }
 
         void OnDisable()
         {
-            UnityEngine.Debug.Log($"[PlanetNavigator][ActivationWatcher] GameObject disabled: '{gameObject.name}' path='{initialPath}'", this);
-        }
-
-        private string GetPath(Transform t)
-        {
-            if (t == null) return "<null>";
-            string path = t.name;
-            var p = t.parent;
-            while (p != null)
-            {
-                path = p.name + "/" + path;
-                p = p.parent;
-            }
-            return path;
+            // Optional minimal log on disable
+            Debug.LogFormat("[PlanetNavigator][ActivationWatcher] Camera disabled: '{0}' parent='{1}'", gameObject.name, parentName ?? "(unknown)");
         }
     }
 }
