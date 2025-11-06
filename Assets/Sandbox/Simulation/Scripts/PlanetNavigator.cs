@@ -26,7 +26,7 @@ public class PlanetNavigator : MonoBehaviour
     [Tooltip("Optional PlanetInfo assets for UI display (must match planetTransforms length).")]
     public List<PlanetInfo> planetInfos;
 
-    [Header("UI (Screen Space Canvas)")]
+    [Header("UI (World Space Canvas)")]
     public Canvas planetCanvas;               // Screen-space canvas (will be switched to ScreenSpaceCamera when planet camera active)
     public Text planetNameText;
     public Text planetDescriptionText;
@@ -336,17 +336,17 @@ public class PlanetNavigator : MonoBehaviour
             bool xrActive = false;
             try { xrActive = UnityEngine.XR.XRSettings.isDeviceActive; } catch (Exception) { xrActive = false; }
 
-            if (xrActive && !forceScreenSpaceMode)
+            if (xrActive && forceScreenSpaceMode)
             {
                 planetCanvas.renderMode = RenderMode.WorldSpace;
                 var rt = planetCanvas.GetComponent<RectTransform>();
                 planetCanvas.transform.SetParent(planetCam.transform, false);
-                rt.localPosition = new Vector3(0f, 0f, 2.0f);
+                rt.localPosition = new Vector3(10f, 0f, 100f);
                 rt.localRotation = Quaternion.identity;
-                rt.localScale = Vector3.one * 0.0025f;
+                rt.localScale = Vector3.one * 0.25f;
                 planetCanvas.worldCamera = planetCam;
                 planetCanvas.gameObject.SetActive(true);
-                Debug.Log("[PlanetNavigator] Using WorldSpace canvas for VR (placed 2m in front of planet camera).");
+                Debug.Log("[PlanetNavigator] Using WorldSpace canvas for VR (placed 10m in front of planet camera).");
 
                 try
                 {
