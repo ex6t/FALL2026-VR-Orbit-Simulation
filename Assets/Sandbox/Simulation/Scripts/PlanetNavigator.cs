@@ -54,8 +54,9 @@ public class PlanetNavigator : MonoBehaviour
     // the currently active planet camera
     private Camera activePlanetCamera = null;
 
-    // If true, force the canvas to use ScreenSpaceCamera (useful when started by keyboard on desktop)
-    private bool forceScreenSpaceMode = false;
+
+
+    private bool _prevAPressed = false;
 
     void Start()
     {
@@ -176,36 +177,38 @@ public class PlanetNavigator : MonoBehaviour
 
     void Update()
     {
-        // Trigger navigation with XR primary button (right hand) - Oculus 'A' maps to primaryButton -
-        // fall back to Space key for desktop testing. If started by keyboard we force ScreenSpace canvas mode
-        bool startPressed = false;
-        bool keyboardPressed = Input.GetKeyDown(KeyCode.Space);
+        if (navigationActive) return;
+
+        bool aPressedThisFrame = false;
 
         try
         {
             var rightHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
             if (rightHand.isValid)
             {
-                bool primaryPressed = false;
-                if (rightHand.TryGetFeatureValue(CommonUsages.primaryButton, out primaryPressed) && primaryPressed)
+                bool pressedNow = false;
+                if (rightHand.TryGetFeatureValue(CommonUsages.primaryButton, out pressedNow))
                 {
-                    startPressed = true;
+                    aPressedThisFrame = pressedNow && !_prevAPressed; // edge
+                    _prevAPressed = pressedNow;
+                }
+                else
+                {
+                    _prevAPressed = false;
                 }
             }
+            else
+            {
+                _prevAPressed = false;
+            }
         }
-        catch (Exception)
-        {
-            // ignore XR errors
-        }
+        catch { }
 
-        // keyboard fallback
-        if (!startPressed && keyboardPressed) startPressed = true;
+        bool keyboardPressedThisFrame = Input.GetKeyDown(KeyCode.Space);
 
-        if (!navigationActive && startPressed)
+        if (aPressedThisFrame || keyboardPressedThisFrame)
         {
-            // if started from keyboard, force ScreenSpaceCamera mode so the HUD is visible in desktop tests
-            forceScreenSpaceMode = keyboardPressed;
-            Debug.Log("[PlanetNavigator] Start input detected. keyboard=" + keyboardPressed + ", forcingScreenSpace=" + forceScreenSpaceMode);
+            Debug.Log("[PlanetNavigator] Start input detected. keyboard=" + keyboardPressedThisFrame);
             StartPlanetTask();
         }
     }
@@ -336,7 +339,7 @@ public class PlanetNavigator : MonoBehaviour
             bool xrActive = false;
             try { xrActive = UnityEngine.XR.XRSettings.isDeviceActive; } catch (Exception) { xrActive = false; }
 
-            if (xrActive && forceScreenSpaceMode)
+            if (xrActive)
             {
                 planetCanvas.renderMode = RenderMode.WorldSpace;
                 var rt = planetCanvas.GetComponent<RectTransform>();
