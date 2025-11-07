@@ -113,6 +113,38 @@ namespace Valve.VR
             }
         }
         
+        public virtual SteamVR_Action_Boolean AButton
+        {
+            get
+            {
+                return SteamVR_Actions.default_AButton;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean NextPlanet
+        {
+            get
+            {
+                return SteamVR_Actions.default_NextPlanet;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean PrevPlanet
+        {
+            get
+            {
+                return SteamVR_Actions.default_PrevPlanet;
+            }
+        }
+        
+        public virtual SteamVR_Action_Boolean nextplanetbutton
+        {
+            get
+            {
+                return SteamVR_Actions.default_nextplanetbutton;
+            }
+        }
+        
         public virtual SteamVR_Action_Vibration Haptic
         {
             get

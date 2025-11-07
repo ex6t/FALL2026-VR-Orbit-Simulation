@@ -54,6 +54,22 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/AButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/NextPlanet",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/PrevPlanet",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/nextplanetbutton",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },
