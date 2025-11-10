@@ -443,7 +443,7 @@ public class PlanetNavigator : MonoBehaviour
                     else if (planetName == "Venus")
                         planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86°F to 158°F\n-Named After Roman Goddess\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's Creation\n-Has An Induced Magnetic Field";
                     else if (planetName == "EarthModel" || planetName == "Earth")
-                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Earth";
+                        planetDescriptionText.text = "-Orbit: 365 Days\n-Takes 23.9 Hours To Rotate\n-Is The Only Planet In The Solar System With 1 Moon\n-No Rings\n-Composed Of Four Main Layers\n-Global Ocean Covers 71% Of Planet's Surface\n-Atmosphere Consists Of 78% Nitrogen, 21% Oxygen, and 1% Other Gases";
                     else if (planetName == "Mars")
                         planetDescriptionText.text = "-Line One Test\n-Line Two Test Mars";
                     else if (planetName == "Jupiter")
