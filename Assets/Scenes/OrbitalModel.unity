@@ -4571,7 +4571,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 997772843}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -8}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
   m_LocalScale: {x: 0.6080401, y: 0.7639, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4579,7 +4579,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.5, y: 164.6}
+  m_AnchoredPosition: {x: 8, y: 164.6}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &997772845
@@ -4595,7 +4595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4604,8 +4604,8 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
-    m_FontStyle: 0
+    m_FontSize: 25
+    m_FontStyle: 1
     m_BestFit: 1
     m_MinSize: 2
     m_MaxSize: 40
@@ -4650,7 +4650,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002231552}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -22.4}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
   m_LocalScale: {x: 1.1730125, y: 1.9373482, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4658,8 +4658,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 11.2, y: 106}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 8, y: 6}
+  m_SizeDelta: {x: 160, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1002231554
 MonoBehaviour:
@@ -4674,7 +4674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4683,7 +4683,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 20
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -4967,7 +4967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27444
+  GUIID: 27452
 --- !u!1 &1029729566
 GameObject:
   m_ObjectHideFlags: 0
@@ -7970,25 +7970,23 @@ MonoBehaviour:
   - {fileID: 1134899299}
   planetInfos:
   - planetName: Mercury
-    description: '- closest     - temperatures ranging from -17C to 80000C    - First
-      discovered by your mom'
+    description: 
   - planetName: Venus
-    description: '- The smallest planet    - The one we are just now writing about    
-      - Oooooh it gets so hot too'
+    description: 
   - planetName: Earth
-    description: home
+    description: 
   - planetName: Mars
-    description: elon
+    description: 
   - planetName: Jupiter
-    description: i need a big boy
+    description: 
   - planetName: Saturn
-    description: married
+    description: 
   - planetName: Uranus
-    description: lol
+    description: 
   - planetName: Neptune
-    description: king
+    description: 
   - planetName: Pluto
-    description: real
+    description: 
   planetCanvas: {fileID: 138067059}
   planetNameText: {fileID: 997772845}
   planetDescriptionText: {fileID: 1002231554}
@@ -14471,9 +14469,21 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.03
       objectReference: {fileID: 0}
+    - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1506836503751720274, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3639908707121217233, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 80
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3639908707121217233, guid: 8031e412f39d2eb45a9b1045dfa22534, type: 3}
       propertyPath: m_LocalPosition.y

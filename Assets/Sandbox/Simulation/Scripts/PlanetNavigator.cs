@@ -415,19 +415,60 @@ public class PlanetNavigator : MonoBehaviour
 
     private void UpdateUIForIndex(int index)
     {
-        if (planetInfos != null && planetInfos.Count == planetTransforms.Count)
+        if (planetInfos != null && planetInfos.Count == planetTransforms.Count) // Double Checks For Errors
         {
-            PlanetInfo info = planetInfos[index];
-            if (planetNameText != null) planetNameText.text = (info != null && !string.IsNullOrEmpty(info.planetName)) ? info.planetName : planetTransforms[index].name;
-            if (planetDescriptionText != null) planetDescriptionText.text = (info != null && !string.IsNullOrEmpty(info.description)) ? info.description : "No description set.";
+            PlanetInfo info = planetInfos[index]; // Grabs the PlanetInfo at the specified index
+
+            // PLANET NAME
+            if (planetNameText != null) // If Planet Name Exists
+                planetNameText.text = (info != null && !string.IsNullOrEmpty(info.planetName))
+                    ? info.planetName
+                    : planetTransforms[index].name;
+
+            // PLANET DESCRIPTION
+            if (planetDescriptionText != null) // If Planet Description Exists
+            {
+                if (info != null && !string.IsNullOrEmpty(info.description))
+                {
+                    // Use description from PlanetInfo (the one in the Inspector)
+                    planetDescriptionText.text = info.description;
+                }
+                else
+                {
+                    // Use Hardcoded descriptions based on planet name
+                    string planetName = planetTransforms[index].name;
+
+                    if (planetName == "Mercury")
+                        planetDescriptionText.text = "-Orbit: 88 Earth Days\n-No Moons\n-No Rings\n-Second Densest Planet\n-Thinnest Atmosphere\n-Named After The Roman Messenger God";
+                    else if (planetName == "Venus")
+                        planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86°F to 158°F\n-Named After Roman Goddess\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's Creation\n-Has An Induced Magnetic Field";
+                    else if (planetName == "EarthModel" || planetName == "Earth")
+                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Earth";
+                    else if (planetName == "Mars")
+                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Mars";
+                    else if (planetName == "Jupiter")
+                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Jupiter";
+                    else if (planetName == "Saturn")
+                        planetDescriptionText.text = "-Line One Test" + Environment.NewLine + "-Line Two Test Saturn";
+                    else if (planetName == "Uranus")
+                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Uranus";
+                    else if (planetName == "Neptune")
+                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Neptune";
+                    else
+                        planetDescriptionText.text = "No description available.";
+                }
+            }
         }
         else
         {
             // If no planetInfos provided, use transform names as fallback
-            if (planetNameText != null) planetNameText.text = planetTransforms[index].name;
-            if (planetDescriptionText != null) planetDescriptionText.text = "";
+            if (planetNameText != null)
+                planetNameText.text = planetTransforms[index].name;
+            if (planetDescriptionText != null)
+                planetDescriptionText.text = "";
         }
     }
+
 
     private void OnNextPlanet()
     {
