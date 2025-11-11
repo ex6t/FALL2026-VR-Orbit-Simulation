@@ -438,18 +438,19 @@ public class PlanetNavigator : MonoBehaviour
                     // Use Hardcoded descriptions based on planet name
                     string planetName = planetTransforms[index].name;
 
+                    // IF PLANET NAME MATCHES, SET DESCRIPTION
                     if (planetName == "Mercury")
                         planetDescriptionText.text = "-Orbit: 88 Earth Days\n-No Moons\n-No Rings\n-Second Densest Planet\n-Thinnest Atmosphere\n-Named After The Roman Messenger God";
                     else if (planetName == "Venus")
-                        planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86°F to 158°F\n-Named After Roman Goddess\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's Creation\n-Has An Induced Magnetic Field";
+                        planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86°F to 158°F\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's Creation\n-Has An Induced Magnetic Field\n-Named After Roman Goddess";
                     else if (planetName == "EarthModel" || planetName == "Earth")
-                        planetDescriptionText.text = "-Orbit: 365 Days\n-Takes 23.9 Hours To Rotate\n-Is The Only Planet In The Solar System With 1 Moon\n-No Rings\n-Composed Of Four Main Layers\n-Global Ocean Covers 71% Of Planet's Surface\n-Atmosphere Consists Of 78% Nitrogen, 21% Oxygen, and 1% Other Gases";
+                        planetDescriptionText.text = "-Orbit: 365 Days\n-Takes 23.9 Hours To Rotate\n-Is The Only Planet In The Solar System With 1 Moon\n-No Rings\n-Composed Of Four Main Layers\n-Global Ocean Covers 71% Of Planet's Surface\n-Atmosphere Consists Of 78% Nitrogen, 21% Oxygen, and 1% Other Gases\n-Named After The Germanic Word \"The Ground\"";
                     else if (planetName == "Mars")
-                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Mars";
+                        planetDescriptionText.text = "-Orbit: 687 Earth Days\n-Takes 24.6 Hours To Rotate\n-Moons: 2\n-No Rings\n-Its Core Is Made Of Iron, Nickel, and Sulfur\n-Scientists Don't Believe That We Can Survive On Mars Anymore\n-Looks Reddish Due To Oxidization/Rusting Of Iron In Its Rocks\n-Its Canyon Named \"Valles Marineris\" Is Long Enough To Stretch From California To New York\n-Home To The Largest Volcano In The Solar System: Olympus Mons.\n-Has A Thin Atmosphere Made Of Carbon Dioxide, Nitrogen, and Argon\n-No Global Magnetic Field\n-Named After The Roman God Of War Since People Believed Mars' Reddish Color Was Similar To Blood\n";
                     else if (planetName == "Jupiter")
-                        planetDescriptionText.text = "-Line One Test\n-Line Two Test Jupiter";
+                        planetDescriptionText.text = "-Orbit: 4333 Earth Days\n-Takes 9.9 Hours To Rotate (Shortest Day In The Solar System)\n-Moons: 95\n-Does Have Rings (Discovered By The Voyager 1)\n-Composition Is Similar To The Sun's (Primarily Of Hydrogen and Helium)\n-Doesn't Have A True Surface, As It's A Gas Giant\n-Its Magnetic Field Is 16-54 Times As Powerful Of Earth's\n-Named After The King Of The Roman Gods";
                     else if (planetName == "Saturn")
-                        planetDescriptionText.text = "-Line One Test" + Environment.NewLine + "-Line Two Test Saturn";
+                        planetDescriptionText.text = "-Orbit: 10,759 Earth Days\n-Takes 10.7 Hours To Rotate (Second Shortest Day In The Solar Systemr\n-Moons: 146\n-Its Rings Are Made Of Billions Of Small Chunks Of Ice And Rocks\n-Composition Is Mostly Made Of Hydrogen And Helium\n-Its Center Is A Dense Core Of Metals That Is Solidified By Intense Heat & Pressure\n-Doesn't Have A True Surface, As It's A Gas Giant\n-Saturn's Magnetic Field Is Smaller Than Jupiter's But Is 578 Times More Powerful Than Earth's";
                     else if (planetName == "Uranus")
                         planetDescriptionText.text = "-Line One Test\n-Line Two Test Uranus";
                     else if (planetName == "Neptune")
