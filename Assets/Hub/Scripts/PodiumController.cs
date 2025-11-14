@@ -6,6 +6,7 @@ namespace Valve.VR.InteractionSystem.Sample
     public class PodiumController : MonoBehaviour
     {
         public GameObject masterControl;
+
         SimulationController simuControl;
 
         AudioSource lecturer;
@@ -28,6 +29,13 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public GameObject earthViewCam;
 
+        [Header("Hub Movement")]
+        [Tooltip("Optional Reference To A HubStationMover. If Assigned, ToggleEarthView Will Move The Hub To The COnfigured Target Index")]
+
+        public HubStationMover hubMover;
+        [Tooltip("Index Of The HubStationMover's Target To Move To When ToggleHubMover Is Called")]
+        public int hubTargetIndexForEarth = 0;
+
         public AudioClip eccentricityVO;
         public AudioClip obliquityVO;
         public AudioClip perihelionVO;
@@ -37,8 +45,40 @@ namespace Valve.VR.InteractionSystem.Sample
             simuControl = masterControl.GetComponent<SimulationController>();
             lecturer = GetComponent<AudioSource>();
 
+            // Auto-Find HubStatnion if not assigned
+            if(hubMover == null)
+            {
+                hubMover = FindObjectOfType<HubStationMover>();
+                if(hubMover != null)
+                    Debug.Log("[PodiumController] Auto-assigned HubStationMover." + hubMover.gameObject.name);
+            }
+
         }
 
+
+        public void ToggleHubMover()
+        {
+            if ((cooldown < Time.time))
+            {
+                cooldown = Time.time + 1f;
+                if (hubMover == null)
+                {
+                    hubMover = FindObjectOfType<HubStationMover>();
+                    if(hubMover == null)
+                    {
+                        Debug.LogWarning("[PodiumController] No HubStationMover found in scene.");
+                        return;
+                    }
+                }
+
+                // Move To The Next COnfigured Hub Target Each Time The Button Is Pressed
+                hubMover.MoveToNext();
+            }
+        }
+
+
+        /* Old Earth View Function From Old Group Project That Fall2025's Group Repurposed
+  
         public void ToggleEarthView()
         {
             if (cooldown < Time.time)
@@ -60,6 +100,7 @@ namespace Valve.VR.InteractionSystem.Sample
             }
 
         }
+        */
 
 
         public void ToggleKepler1()
