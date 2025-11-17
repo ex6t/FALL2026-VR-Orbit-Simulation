@@ -49,6 +49,8 @@ namespace Valve.VR
         
         private static SteamVR_Action_Boolean p_default_nextplanetbutton;
         
+        private static SteamVR_Action_Boolean p_default_ReturnToShipButton;
+        
         private static SteamVR_Action_Vibration p_default_Haptic;
         
         private static SteamVR_Action_Vector2 p_platformer_Move;
@@ -195,6 +197,14 @@ namespace Valve.VR
             }
         }
         
+        public static SteamVR_Action_Boolean default_ReturnToShipButton
+        {
+            get
+            {
+                return SteamVR_Actions.p_default_ReturnToShipButton.GetCopy<SteamVR_Action_Boolean>();
+            }
+        }
+        
         public static SteamVR_Action_Vibration default_Haptic
         {
             get
@@ -286,6 +296,7 @@ namespace Valve.VR
                     SteamVR_Actions.default_NextPlanet,
                     SteamVR_Actions.default_PrevPlanet,
                     SteamVR_Actions.default_nextplanetbutton,
+                    SteamVR_Actions.default_ReturnToShipButton,
                     SteamVR_Actions.default_Haptic,
                     SteamVR_Actions.platformer_Move,
                     SteamVR_Actions.platformer_Jump,
@@ -312,6 +323,7 @@ namespace Valve.VR
                     SteamVR_Actions.default_NextPlanet,
                     SteamVR_Actions.default_PrevPlanet,
                     SteamVR_Actions.default_nextplanetbutton,
+                    SteamVR_Actions.default_ReturnToShipButton,
                     SteamVR_Actions.platformer_Move,
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Steering,
@@ -340,6 +352,7 @@ namespace Valve.VR
                     SteamVR_Actions.default_NextPlanet,
                     SteamVR_Actions.default_PrevPlanet,
                     SteamVR_Actions.default_nextplanetbutton,
+                    SteamVR_Actions.default_ReturnToShipButton,
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Brake,
                     SteamVR_Actions.buggy_Reset,
@@ -368,6 +381,7 @@ namespace Valve.VR
                     SteamVR_Actions.default_NextPlanet,
                     SteamVR_Actions.default_PrevPlanet,
                     SteamVR_Actions.default_nextplanetbutton,
+                    SteamVR_Actions.default_ReturnToShipButton,
                     SteamVR_Actions.platformer_Move,
                     SteamVR_Actions.platformer_Jump,
                     SteamVR_Actions.buggy_Steering,
@@ -395,6 +409,7 @@ namespace Valve.VR
             SteamVR_Actions.p_default_NextPlanet = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/default/in/NextPlanet")));
             SteamVR_Actions.p_default_PrevPlanet = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/default/in/PrevPlanet")));
             SteamVR_Actions.p_default_nextplanetbutton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/default/in/nextplanetbutton")));
+            SteamVR_Actions.p_default_ReturnToShipButton = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/default/in/ReturnToShipButton")));
             SteamVR_Actions.p_default_Haptic = ((SteamVR_Action_Vibration)(SteamVR_Action.Create<SteamVR_Action_Vibration>("/actions/default/out/Haptic")));
             SteamVR_Actions.p_platformer_Move = ((SteamVR_Action_Vector2)(SteamVR_Action.Create<SteamVR_Action_Vector2>("/actions/platformer/in/Move")));
             SteamVR_Actions.p_platformer_Jump = ((SteamVR_Action_Boolean)(SteamVR_Action.Create<SteamVR_Action_Boolean>("/actions/platformer/in/Jump")));

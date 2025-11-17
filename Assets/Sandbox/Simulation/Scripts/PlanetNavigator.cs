@@ -371,14 +371,14 @@ public class PlanetNavigator : MonoBehaviour
         yield break;
     }
 
-    private void DeactivatePlanetCamera()
+    public void DeactivatePlanetCamera()
     {
         // Deactivate the active planet camera if present
         if (activePlanetCamera != null)
         {
             activePlanetCamera.gameObject.SetActive(false);
             activePlanetCamera = null;
-        }
+        } 
 
         // Restore HMD cameras
         if (disabledHmdCameras != null)
