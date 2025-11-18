@@ -4,7 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/OrbitalModel.unity
+    guid: 5eb69099aee3f5640b95fefa491e8b8f
+  - enabled: 1
+    path: Assets/Scenes/HabitableZone1.unity
+    guid: 41c864fef363c59428edceb5a4371a40
   m_configObjects:
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: c79d71dbde3c7a342899e4f881fdf96b, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 2bcf26312d04b7a4289b0fd24abbe631, type: 2}
