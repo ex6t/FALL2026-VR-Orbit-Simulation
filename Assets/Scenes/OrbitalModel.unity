@@ -1548,7 +1548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27226
+  GUIID: 27242
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -3079,7 +3079,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27294
+  GUIID: 27326
 --- !u!1001 &574775552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3515,7 +3515,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 0786c5d07b92adc4c95a64835da4aaba, type: 3}
+  m_Texture: {fileID: 2800000, guid: cf99fec660914e5488b44cd21ea800d6, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -4910,7 +4910,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 38b289d177be1d441aa7995aec166877, type: 3}
+  m_Texture: {fileID: 2800000, guid: 6a7cb3b296a65a3498ca4a48d1fca5ef, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -5163,7 +5163,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 0786c5d07b92adc4c95a64835da4aaba, type: 3}
+  m_Texture: {fileID: 2800000, guid: cf99fec660914e5488b44cd21ea800d6, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -5785,7 +5785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27462
+  GUIID: 27514
 --- !u!1 &1024093416
 GameObject:
   m_ObjectHideFlags: 0
@@ -8674,7 +8674,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 38b289d177be1d441aa7995aec166877, type: 3}
+  m_Texture: {fileID: 2800000, guid: 6a7cb3b296a65a3498ca4a48d1fca5ef, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -8831,7 +8831,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 149b88de2f46457479e0376cf5b44101, type: 3}
+  m_Texture: {fileID: 2800000, guid: 1a3c50f9dbd850c4f968520500129c38, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -10481,7 +10481,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 149b88de2f46457479e0376cf5b44101, type: 3}
+  m_Texture: {fileID: 2800000, guid: 1a3c50f9dbd850c4f968520500129c38, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -11174,6 +11174,9 @@ MonoBehaviour:
   hand: {fileID: 1936724548}
   aButtonAction:
     actionPath: /actions/default/in/AButton
+    needsReinit: 0
+  bButtonAction:
+    actionPath: /actions/default/in/ReturnToShipButton
     needsReinit: 0
   nextPlanetAction:
     actionPath: /actions/default/in/NextPlanet
