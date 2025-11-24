@@ -19,49 +19,55 @@ public class HandStartPlanetNavigator : MonoBehaviour
 
     [SerializeField] private PlanetNavigator planetNavigator; // drag PlanetManager here (has PlanetNavigator)
 
+    // 🔹 NEW: reference to TabletSummoner
+    [SerializeField] private TabletSummoner tabletSummoner;
+
     void Reset()
     {
         hand = GetComponent<Hand>();
         if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>();
+        if (tabletSummoner == null) tabletSummoner = FindObjectOfType<TabletSummoner>();
     }
 
     void Update()
     {
-        if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>();
-
-        // --- Start navigation on A (RIGHT hand) ---
-        // A lives on the RIGHT Touch controller
-        if (hand.handType == SteamVR_Input_Sources.RightHand && aButtonAction.GetStateDown(hand.handType)) 
-        { 
-            if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>(); 
-            if (planetNavigator != null) 
-            {
-                planetNavigator.StartPlanetTask(); 
-                Debug.Log("[Hand] A pressed → PlanetNavigator.StartPlanetTask()"); 
-            } 
-            else 
-            {
-                Debug.LogWarning("[Hand] PlanetNavigator not found in scene."); 
-            } 
+        if (hand == null)
+        {
+            hand = GetComponent<Hand>();
+            if (hand == null) return; // no hand, nothing to do
         }
 
+        if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>();
+        if (tabletSummoner == null) tabletSummoner = FindObjectOfType<TabletSummoner>();
+
+        // --- Start navigation on A (RIGHT hand) ---
+        if (hand.handType == SteamVR_Input_Sources.RightHand && aButtonAction.GetStateDown(hand.handType))
+        {
+            if (tabletSummoner != null)
+            {
+                tabletSummoner.ToggleAndPlaceTablet();
+                Debug.Log("[Hand] A pressed: TabletSummoner.ToggleAndPlaceTablet()");
+            }
+            else
+            {
+                Debug.LogWarning("[Hand] No TabletSummoner found in scene.");
+            }
+        }
 
         // --- Start navigation on B (RIGHT hand) ---
-        // B lives on the RIGHT Touch controller
         if (hand.handType == SteamVR_Input_Sources.RightHand && bButtonAction.GetStateDown(hand.handType))
         {
             if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>();
             if (planetNavigator != null)
             {
                 planetNavigator.DeactivatePlanetCamera();
-                Debug.Log("[Hand] A pressed → PlanetNavigator.DeactivatePlanetCamera()");
+                Debug.Log("[Hand] B pressed → PlanetNavigator.DeactivatePlanetCamera()");
             }
             else
             {
                 Debug.LogWarning("[Hand] PlanetNavigator not found in scene.");
             }
         }
-
 
         if (planetNavigator == null) return; // nothing else to do
 
