@@ -1,0 +1,155 @@
+using System.Collections;
+using UnityEngine;
+
+/// <summary>
+/// Fades the albedo/tint of a sun material from white (255,255,255) to red (255,0,0).
+/// - Attach this to the Sun GameObject (or any GameObject) and assign the Renderer in the inspector,
+///   or leave the Renderer empty to auto-find one on the same GameObject.
+/// - You can start the fade automatically when the scene starts (triggerOnStart = true),
+///   or start it when the player enters a trigger collider on this GameObject (triggerOnPlayerEnter = true).
+/// Notes:
+/// - This attempts to set common color properties used by Unity shaders:
+///   "_BaseColor" (URP/Shader Graph), "_Color" (Built-in), and falls back to renderer.material.color.
+/// - If the material uses emission and has "_EmissionColor", this script will also animate emission.
+/// </summary>
+public class SunAlbedoFader : MonoBehaviour
+{
+    [Header("Target")]
+    [Tooltip("Renderer that has the sun material. If empty, this will use the Renderer on this GameObject.")]
+    public Renderer sunRenderer;
+
+    [Header("Fade settings")]
+    [Tooltip("Fade duration in seconds.")]
+    public float duration = 5f;
+
+    [Tooltip("Start automatically when the scene starts.")]
+    public bool triggerOnStart = true;
+
+    [Tooltip("Start when the Player (by tag) enters this object's trigger collider.")]
+    public bool triggerOnPlayerEnter = false;
+
+    [Tooltip("Tag used to detect the player for OnTriggerEnter.")]
+    public string playerTag = "Player";
+
+    // Target colors (255-based in UI; converted to Unity Color)
+    private readonly Color startColor = new Color(1f, 1f, 1f, 1f); // 255,255,255
+    private readonly Color endColor = new Color(1f, 0f, 0f, 1f);   // 255,0,0
+
+    // Internal material instance we modify at runtime
+    private Material instancedMaterial;
+    private bool isFading = false;
+
+    void Start()
+    {
+        if (sunRenderer == null)
+        {
+            sunRenderer = GetComponent<Renderer>();
+        }
+
+        if (triggerOnStart)
+        {
+            StartFade();
+        }
+    }
+
+    /// <summary>
+    /// Call this to start the fade from white to red.
+    /// </summary>
+    public void StartFade()
+    {
+        if (isFading) return;
+
+        if (sunRenderer == null)
+        {
+            Debug.LogWarning("[SunAlbedoFader] No Renderer assigned or found to fade.");
+            return;
+        }
+
+        // Use renderer.material to create an instance so we don't modify shared material of other objects.
+        instancedMaterial = sunRenderer.material;
+        StartCoroutine(FadeCoroutine(duration));
+    }
+
+    IEnumerator FadeCoroutine(float secs)
+    {
+        isFading = true;
+        float elapsed = 0f;
+
+        // Determine which property to set on the material
+        string colorProp = null;
+        if (instancedMaterial.HasProperty("_BaseColor")) colorProp = "_BaseColor";
+        else if (instancedMaterial.HasProperty("_Color")) colorProp = "_Color";
+
+        bool hasEmission = instancedMaterial.HasProperty("_EmissionColor");
+        if (hasEmission)
+        {
+            // Ensure emission keyword on so emission color takes effect
+            instancedMaterial.EnableKeyword("_EMISSION");
+        }
+
+        // If we found a color property, initialize it to startColor to ensure consistent starting point
+        if (colorProp != null)
+        {
+            instancedMaterial.SetColor(colorProp, startColor);
+        }
+        else
+        {
+            // fallback
+            instancedMaterial.color = startColor;
+        }
+        if (hasEmission)
+        {
+            instancedMaterial.SetColor("_EmissionColor", startColor);
+        }
+
+        while (elapsed < secs)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / secs);
+            Color c = Color.Lerp(startColor, endColor, t);
+
+            if (colorProp != null)
+            {
+                instancedMaterial.SetColor(colorProp, c);
+            }
+            else
+            {
+                instancedMaterial.color = c;
+            }
+
+            if (hasEmission)
+            {
+                instancedMaterial.SetColor("_EmissionColor", c);
+            }
+
+            yield return null;
+        }
+
+        // Ensure final color is exact
+        if (colorProp != null)
+            instancedMaterial.SetColor(colorProp, endColor);
+        else
+            instancedMaterial.color = endColor;
+
+        if (hasEmission)
+            instancedMaterial.SetColor("_EmissionColor", endColor);
+
+        isFading = false;
+    }
+
+    // Optional trigger behavior: needs a Collider set as "isTrigger = true" on this GameObject
+    void OnTriggerEnter(Collider other)
+    {
+        if (!triggerOnPlayerEnter) return;
+        if (other.CompareTag(playerTag))
+        {
+            StartFade();
+        }
+    }
+
+    void OnDestroy()
+    {
+        // If we created an instance via renderer.material we should allow it to be cleaned up.
+        // (Do not call Destroy(instancedMaterial) unless you intentionally want to remove it at runtime.)
+    }
+}
