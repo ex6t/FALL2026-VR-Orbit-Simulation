@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.vrorbitalmodel.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\kelly\\Desktop\\FALL2025 Capstone\\FALL2025-VR-Orbit-Simulation\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\rosan\\Documents\\GitHub\\FALL2025-VR-Orbit-Simulation\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "VROrbitalModel [Testing]"

@@ -57,9 +57,11 @@ public class HandStartPlanetNavigator : MonoBehaviour
             if (hand == null) return;
         }
 
+        // Make sure the tablet/menu refs are present before using them
         if (tabletSummoner == null) tabletSummoner = FindObjectOfType<TabletSummoner>();
-        Debug.Log("[Hand] tabletSummoner assigned: " + (tabletSummoner != null));
         if (tabletMenu == null) tabletMenu = FindObjectOfType<TabletMenu>();
+
+        Debug.Log("[Hand] tabletSummoner assigned: " + (tabletSummoner != null));
         Debug.Log("[Hand] tabletMenu assigned: " + (tabletMenu != null));
 
         if (joyConUpAction == null || joyConDownAction == null)
@@ -73,15 +75,29 @@ public class HandStartPlanetNavigator : MonoBehaviour
             // A → open tablet
             if (aButtonAction != null && aButtonAction.GetStateDown(hand.handType))
             {
-                tabletSummoner?.OpenTablet();
-                Debug.Log("[Hand] A pressed → open tablet");
+                if (tabletSummoner != null)
+                {
+                    tabletSummoner.OpenTablet();
+                    Debug.Log("[Hand] A pressed → open tablet");
+                }
+                else
+                {
+                    Debug.LogWarning("[Hand] A pressed but tabletSummoner is NULL");
+                }
             }
 
             // B → close tablet
             if (bButtonAction != null && bButtonAction.GetStateDown(hand.handType))
             {
-                tabletSummoner?.CloseTablet();
-                Debug.Log("[Hand] B pressed → close tablet");
+                if (tabletSummoner != null)
+                {
+                    tabletSummoner.CloseTablet();
+                    Debug.Log("[Hand] B pressed → close tablet");
+                }
+                else
+                {
+                    Debug.LogWarning("[Hand] B pressed but tabletSummoner is NULL");
+                }
             }
 
             // Only handle menu navigation when tablet is open
@@ -102,50 +118,64 @@ public class HandStartPlanetNavigator : MonoBehaviour
                     // For testing just trying selecting the current option
                     tabletMenu.GetCurrentOption()?.Select();
                 }
+            }
+        }
 
+        // X → confirm current option (check either controller and guard nulls)
+        if (tabletSummoner != null && tabletMenu != null && xButtonAction != null)
+        {
+            bool isTabletOpen = tabletSummoner.IsTabletOpen;
+            bool xPressedOnLeft = xButtonAction.GetStateDown(SteamVR_Input_Sources.LeftHand);
+            bool xPressedOnRight = xButtonAction.GetStateDown(SteamVR_Input_Sources.RightHand);
 
-                // X → confirm current option (SWITCH VERSION)
-                if (hand.handType == SteamVR_Input_Sources.LeftHand && xButtonAction.GetStateDown(hand.handType))
+            if (isTabletOpen && (xPressedOnLeft || xPressedOnRight))
+            {
+                Debug.Log("[Hand] X pressed (detected on " + (xPressedOnLeft ? "Left" : "Right") + " hand)");
+
+                var current = tabletMenu.GetCurrentOption();
+                if (current == null)
                 {
-                    Debug.Log("[Hand] X pressed");
+                    Debug.LogWarning("[Hand] X pressed but current option is NULL");
+                }
+                else
+                {
+                    Debug.Log("[Hand] X current option: " + current.gameObject.name);
 
-                    var current = tabletMenu.GetCurrentOption();
-                    if (current == null)
+                    // If it's a Button, invoke its onClick (recommended)
+                    if (current.TryGetComponent<Button>(out Button btn))
                     {
-                        Debug.LogWarning("[Hand] X pressed but current option is NULL");
-                        return;
+                        Debug.Log("[Hand] Invoking Button.onClick() for: " + btn.name);
+                        btn.onClick.Invoke();
                     }
-
-                    string optionName = current.gameObject.name;
-                    Debug.Log("[Hand] X current option: " + optionName);
-
-                    switch (optionName)
+                    else
                     {
-                        case "ViewEachPlanetBtn":
-                            if (planetNavigator != null)
-                            {
-                                Debug.Log("[Hand] X → StartPlanetTask()");
-                                planetNavigator.StartPlanetTask();
-                            }
-                            else
-                            {
-                                Debug.LogWarning("[Hand] planetNavigator is NULL, cannot StartPlanetTask()");
-                            }
-                            break;
+                        string optionName = current.gameObject.name;
+                        switch (optionName)
+                        {
+                            case "ViewEachPlanetBtn":
+                                if (planetNavigator != null)
+                                {
+                                    Debug.Log("[Hand] X → StartPlanetTask()");
+                                    planetNavigator.StartPlanetTask();
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("[Hand] planetNavigator is NULL, cannot StartPlanetTask()");
+                                }
+                                break;
 
-                        case "RedSunBtn":
-                            // TODO: call your "Examine Red Sun and Habitable Zones" logic here
-                            Debug.Log("[Hand] X → RedSunBtn selected (TODO: implement action)");
-                            break;
+                            case "RedSunBtn":
+                                Debug.Log("[Hand] X → RedSunBtn selected (TODO: implement action)");
+                                break;
 
-                        case "SeasonsBtn":
-                            // TODO: call your "Travel Through Each Season" logic here
-                            Debug.Log("[Hand] X → SeasonsBtn selected (TODO: implement action)");
-                            break;
+                            case "SeasonsBtn":
+                                Debug.Log("[Hand] X → SeasonsBtn selected (TODO: implement action)");
+                                break;
 
-                        default:
-                            Debug.LogWarning("[Hand] X pressed on unknown option: " + optionName);
-                            break;
+                            default:
+                                Debug.LogWarning("[Hand] X pressed on unknown option: " + optionName);
+                                break;
+                        }
                     }
                 }
             }
