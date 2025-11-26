@@ -1,36 +1,41 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // only if you're using the new Input System
+using UnityEngine.InputSystem; 
 
 public class TabletSummoner : MonoBehaviour
 {
     [Header("References")]
     public Transform playerCamera;      // VR camera
-    public Transform tabletCanvas;      // The root transform of the 2D tablet canvas
+    public Transform tabletCanvas;      // tablet canvas root
 
     [Header("Placement Settings")]
-    public float distanceInFront = 1.0f; // How far in front of the player
-    public float heightOffset = -0.2f;   // Slightly lower than eye level
+    public float distanceInFront = 1.0f;
+    public float heightOffset = -0.2f;
+
+    public bool IsTabletOpen => tabletCanvas != null && tabletCanvas.gameObject.activeSelf;
 
     void Update()
     {
-        // OPTIONAL: Only if you also want Gamepad A to trigger this
-        if (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)
-        {
-            ToggleAndPlaceTablet();
-        }
+
     }
 
     public void ToggleAndPlaceTablet()
     {
-        // Toggle active
-        bool newActive = !tabletCanvas.gameObject.activeSelf;
-        tabletCanvas.gameObject.SetActive(newActive);
+        if (!IsTabletOpen) OpenTablet();
+        else CloseTablet();
+    }
 
-        if (!newActive) return; // if we just turned it off, don't reposition
+    public void OpenTablet()
+    {
+        if (tabletCanvas == null || playerCamera == null)
+        {
+            Debug.LogWarning("[TabletSummoner] Missing references.");
+            return;
+        }
 
-        // Place it in front of player
+        tabletCanvas.gameObject.SetActive(true);
+
         Vector3 forward = playerCamera.forward;
-        forward.y = 0f;                 // keep it horizontal so it doesn’t tilt up/down weirdly
+        forward.y = 0f;
         forward.Normalize();
 
         Vector3 targetPos = playerCamera.position
@@ -38,8 +43,17 @@ public class TabletSummoner : MonoBehaviour
                             + Vector3.up * heightOffset;
 
         tabletCanvas.position = targetPos;
-
-        // Make it face the player
         tabletCanvas.rotation = Quaternion.LookRotation(forward);
+
+        Debug.Log("[TabletSummoner] Opened tablet.");
+    }
+
+    public void CloseTablet()
+    {
+        if (tabletCanvas != null)
+        {
+            tabletCanvas.gameObject.SetActive(false);
+            Debug.Log("[TabletSummoner] Closed tablet.");
+        }
     }
 }

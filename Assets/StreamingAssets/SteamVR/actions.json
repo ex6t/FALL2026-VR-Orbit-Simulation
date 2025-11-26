@@ -74,6 +74,18 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/joycondown",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/joyconup",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/XButton",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

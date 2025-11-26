@@ -58,7 +58,7 @@ public class PlanetNavigator : MonoBehaviour
 
     private bool _prevAPressed = false;
 
-    void Start()
+    public void Start()
     {
         // Log the planets list so you can verify ordering / assigned objects (lightweight)
         if (planetTransforms == null || planetTransforms.Count == 0)
