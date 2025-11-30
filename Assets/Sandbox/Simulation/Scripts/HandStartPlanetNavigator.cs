@@ -9,20 +9,20 @@ public class HandStartPlanetNavigator : MonoBehaviour
     [Tooltip("Reference to the Hand component on this object (optional)")]
     public Hand hand;
 
-    // A button: open tablet
+    // A button: Open Tablet
     public SteamVR_Action_Boolean aButtonAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("AButton");
 
-    // B button: close tablet
+    // B button: Closes Tablet & Ends Close Up Cameras
     public SteamVR_Action_Boolean bButtonAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("returntoshipbutton");
 
-    // X button: confirm selection
+    // X button: Confirm Selection
     public SteamVR_Action_Boolean xButtonAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("XButton");
 
-    // Existing planet actions
+    // Triggers: Moves Between Each Planet (Triggers)
     public SteamVR_Action_Boolean nextPlanetAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("NextPlanet");
     public SteamVR_Action_Boolean prevPlanetAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("PrevPlanet");
 
-    // NEW: Right joystick (vector2)
+    // Right joystick (vector2)
     public SteamVR_Action_Vector2 rightStickAction = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("RightStick");
 
     // JoyCon up/down as *buttons* (DPAD)
@@ -32,6 +32,8 @@ public class HandStartPlanetNavigator : MonoBehaviour
     [SerializeField] private PlanetNavigator planetNavigator;
     [SerializeField] private TabletSummoner tabletSummoner;
     [SerializeField] private TabletMenu tabletMenu;
+
+    bool planetTaskStarted = false; // Track if the planet task has started
 
     void Reset()
     {
@@ -72,7 +74,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
         // ---------- TABLET CONTROLS (RIGHT HAND) ----------
         if (hand.handType == SteamVR_Input_Sources.RightHand)
         {
-            // A → open tablet
+            // A: OPENS TABLET
             if (aButtonAction != null && aButtonAction.GetStateDown(hand.handType))
             {
                 if (tabletSummoner != null)
@@ -86,31 +88,46 @@ public class HandStartPlanetNavigator : MonoBehaviour
                 }
             }
 
-            // B → close tablet
+            // B: CLOSES TABLET OR ENDS PLANET TASK
             if (bButtonAction != null && bButtonAction.GetStateDown(hand.handType))
             {
-                if (tabletSummoner != null)
+                if (planetTaskStarted == true) // Checks If The Planet Task Has Started
+                {
+                    if (planetNavigator != null)
+                    {
+                        planetNavigator.ReturnToShip(); // Ends The Planet Task
+                        Debug.Log("[Hand] B pressed: EndPlanetTask()"); // Debug Log
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[Hand] planetNavigator is NULL, cannot EndPlanetTask()"); // Debug Log Warning
+                    }
+                    planetTaskStarted = false; // Reset the flag after ending the task
+                }
+
+                else if (tabletSummoner != null) // If The Planet Task Has Not Started, Just Close The Tablet
                 {
                     tabletSummoner.CloseTablet();
-                    Debug.Log("[Hand] B pressed → close tablet");
+                    Debug.Log("[Hand] B pressed → close tablet"); // Debug Log
                 }
                 else
                 {
-                    Debug.LogWarning("[Hand] B pressed but tabletSummoner is NULL");
+                    Debug.LogWarning("[Hand] B pressed but tabletSummoner is NULL"); // Debug Log Warning
                 }
             }
 
+            // DPAD Up/Down: NAVIGATE TABLET MENU
             // Only handle menu navigation when tablet is open
             if (tabletSummoner != null && tabletSummoner.IsTabletOpen && tabletMenu != null)
             {
-                // DPAD North → Move up
+                // DPAD North: Move up
                 if (joyConUpAction != null && joyConUpAction.GetStateDown(hand.handType))
                 {
                     tabletMenu.MoveUp();
                     Debug.Log("[Hand] joyconup → TabletMenu.MoveUp()");
                 }
 
-                // DPAD South → Move down
+                // DPAD South: Move down
                 if (joyConDownAction != null && joyConDownAction.GetStateDown(hand.handType))
                 {
                     tabletMenu.MoveDown();
@@ -121,7 +138,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
             }
         }
 
-        // X → confirm current option (check either controller and guard nulls)
+        // X: CONFIRM SELECTION
         if (tabletSummoner != null && tabletMenu != null && xButtonAction != null)
         {
             bool isTabletOpen = tabletSummoner.IsTabletOpen;
@@ -141,22 +158,35 @@ public class HandStartPlanetNavigator : MonoBehaviour
                 {
                     Debug.Log("[Hand] X current option: " + current.gameObject.name);
 
-                    // If it's a Button, invoke its onClick (recommended)
+                    // If it's a Button, invoke its onClick
                     if (current.TryGetComponent<Button>(out Button btn))
                     {
                         Debug.Log("[Hand] Invoking Button.onClick() for: " + btn.name);
                         btn.onClick.Invoke();
+
+                        // Special case: if it's the ViewEachPlanetBtn, mark planetTaskStarted to be true
+                        if (current.gameObject.name == "ViewEachPlanetBtn")
+                        {
+                            planetTaskStarted = true; // Marks that the planet task has started
+                            Debug.Log("[Hand] planetTaskStarted = true (via Button.onClick)"); // Debug Log
+                        }
                     }
+
+                    // If it's not a Button, handle specific cases
                     else
                     {
                         string optionName = current.gameObject.name;
                         switch (optionName)
                         {
+                            // CASE 1: VIEW EACH PLANET
                             case "ViewEachPlanetBtn":
                                 if (planetNavigator != null)
                                 {
-                                    Debug.Log("[Hand] X → StartPlanetTask()");
+                                    Debug.Log("[Hand] X: StartPlanetTask()");
+                                    planetTaskStarted = true; // Marks that the planet task has started
                                     planetNavigator.StartPlanetTask();
+                                    
+
                                 }
                                 else
                                 {
@@ -164,12 +194,14 @@ public class HandStartPlanetNavigator : MonoBehaviour
                                 }
                                 break;
 
+                            // CASE 2: RED SUN
                             case "RedSunBtn":
-                                Debug.Log("[Hand] X → RedSunBtn selected (TODO: implement action)");
+                                Debug.Log("[Hand] X: RedSunBtn selected (TODO: implement action)");
                                 break;
 
+                            // CASE 3: SEASONS
                             case "SeasonsBtn":
-                                Debug.Log("[Hand] X → SeasonsBtn selected (TODO: implement action)");
+                                Debug.Log("[Hand] X: SeasonsBtn selected (TODO: implement action)");
                                 break;
 
                             default:
@@ -181,16 +213,16 @@ public class HandStartPlanetNavigator : MonoBehaviour
             }
         }
 
-        // ------ EXISTING PLANET NAV STUFF BELOW ------
+        // TRIGGERS: NAVIGATE PLANETS
         if (planetNavigator == null) return;
 
-        // Next planet on RIGHT trigger
+        // RIGHT TRIGGER: NEXT PLANET
         if (nextPlanetAction != null && nextPlanetAction.GetStateDown(SteamVR_Input_Sources.RightHand))
         {
             if (planetNavigator.nextButton != null)
             {
                 planetNavigator.nextButton.onClick.Invoke();
-                Debug.Log("[HandNav] Right Trigger → NextPlanet");
+                Debug.Log("[HandNav] Right Trigger: NextPlanet");
             }
             else
             {
@@ -198,13 +230,13 @@ public class HandStartPlanetNavigator : MonoBehaviour
             }
         }
 
-        // Previous planet on LEFT trigger
+        // LEFT TRIGGER: PREV PLANET
         if (prevPlanetAction != null && prevPlanetAction.GetStateDown(SteamVR_Input_Sources.LeftHand))
         {
             if (planetNavigator.prevButton != null)
             {
                 planetNavigator.prevButton.onClick.Invoke();
-                Debug.Log("[HandNav] Left Trigger → PrevPlanet");
+                Debug.Log("[HandNav] Left Trigger: PrevPlanet");
             }
             else
             {
