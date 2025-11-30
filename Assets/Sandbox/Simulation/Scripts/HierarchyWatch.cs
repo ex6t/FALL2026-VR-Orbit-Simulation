@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Diagnostics;
-using UnityEngine;
-using System.Diagnostics;
 using System.Text;
 
 public class HierarchyWatch : MonoBehaviour
