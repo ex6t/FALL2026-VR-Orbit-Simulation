@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27210
+  GUIID: 27184
 --- !u!1 &149023826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,7 +1740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27306
+  GUIID: 27270
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -3480,7 +3480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27406
+  GUIID: 27370
 --- !u!1 &567087471
 GameObject:
   m_ObjectHideFlags: 0
@@ -6596,7 +6596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27640
+  GUIID: 27594
 --- !u!1 &1024093416
 GameObject:
   m_ObjectHideFlags: 0
@@ -14529,6 +14529,10 @@ PrefabInstance:
       propertyPath: masterControl
       value: 
       objectReference: {fileID: 2081311512}
+    - target: {fileID: 1292968828426186863, guid: 6bda14c3841e05746ba77ce8f6f04d5f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1757390840013823471, guid: 6bda14c3841e05746ba77ce8f6f04d5f, type: 3}
       propertyPath: m_DynamicOccludee
       value: 1

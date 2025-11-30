@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,16 +6,7 @@ using UnityEngine.XR;
 using UnityEngine.EventSystems;
 using Valve.VR.InteractionSystem;
 
-/// <summary>
-/// PlanetNavigator controls entering per-planet camera views and the UI navigation.
-/// - All planet child Cameras are initially disabled in Start().
-/// - Press Space to start navigation (opens the UI and activates the first planet camera).
-/// - Next/Prev UI buttons switch the active planet camera.
-/// - ReturnToShip deactivates the planet camera, re-enables the player's HMD cameras, and returns the player rig to shipTransform.
-/// 
-/// This implementation does NOT disable the player's rig GameObject; instead it disables only the HMD Camera(s)
-/// and AudioListener so the selected planet Camera can render while controllers/pointers remain active.
-/// </summary>
+
 public class PlanetNavigator : MonoBehaviour
 {
     [Header("Planets (Transforms)")]
@@ -27,7 +18,7 @@ public class PlanetNavigator : MonoBehaviour
     public List<PlanetInfo> planetInfos;
 
     [Header("UI (World Space Canvas)")]
-    public Canvas planetCanvas;               // Screen-space canvas (will be switched to ScreenSpaceCamera when planet camera active)
+    public Canvas planetCanvas; // Screen-Space Camera or World-Space Canvas
     public Text planetNameText;
     public Text planetDescriptionText;
     public Button nextButton;
@@ -38,7 +29,7 @@ public class PlanetNavigator : MonoBehaviour
     [Tooltip("Where the Player rig will be moved when returning to the ship.")]
     public Transform shipTransform;
 
-    // internal state
+    // Internal State
     private int currentPlanetIndex = -1;
     private bool navigationActive = false;
 
@@ -55,7 +46,6 @@ public class PlanetNavigator : MonoBehaviour
     private Camera activePlanetCamera = null;
 
 
-
     private bool _prevAPressed = false;
 
     public void Start()
@@ -67,80 +57,50 @@ public class PlanetNavigator : MonoBehaviour
             return;
         }
 
-        Debug.Log("[PlanetNavigator] Planet list:");
+        Debug.Log("[PlanetNavigator] Planet list (Transforms):");
         for (int i = 0; i < planetTransforms.Count; i++)
         {
             var t = planetTransforms[i];
-            Debug.LogFormat("  Index {0}: {1} (obj={2})", i, (t != null ? t.name : "NULL"), t);
+            Debug.Log($"  planetTransforms[{i}] = {(t != null ? t.name : "NULL")}");
         }
 
-        // collect planet cameras (one per planet) and disable them (no duplicate watchers)
+        // collect planet cameras (one per planet) and disable them
         planetCameras.Clear();
-        if (planetTransforms != null)
+        for (int i = 0; i < planetTransforms.Count; i++)
         {
-            foreach (var t in planetTransforms)
+            Transform t = planetTransforms[i];
+            Camera cam = null;
+
+            if (t != null)
             {
-                if (t == null)
-                {
-                    planetCameras.Add(null);
-                    continue;
-                }
-
-                // Primary lookup: any Camera component in children (includes inactive)
-                Camera cam = t.GetComponentInChildren<Camera>(true);
-
-                // Fallback #1: find a GameObject named "<PlanetName>Camera" anywhere in the scene
-                if (cam == null)
-                {
-                    string fallbackName = t.name + "Camera";
-                    var go = GameObject.Find(fallbackName);
-                    if (go != null)
-                    {
-                        cam = go.GetComponent<Camera>();
-                        if (cam != null)
-                            Debug.LogFormat("[PlanetNavigator] Found camera by GameObject.Find(\"{0}\") for planet '{1}'", fallbackName, t.name);
-                    }
-                }
-
-                // Fallback #2: search for any Camera in scene whose name contains the planet name (case-insensitive)
-                if (cam == null)
-                {
-                    Camera[] allCams = GameObject.FindObjectsOfType<Camera>(true);
-                    foreach (var c in allCams)
-                    {
-                        if (c == null || c.gameObject == null) continue;
-                        if (c.name.ToLower().Contains(t.name.ToLower()))
-                        {
-                            cam = c;
-                            Debug.LogFormat("[PlanetNavigator] Found camera by name-contains ('{0}') for planet '{1}' -> camera '{2}'", t.name, t.name, c.name);
-                            break;
-                        }
-                    }
-                }
-
-                // store result and ensure it's initially disabled
-                planetCameras.Add(cam);
-                if (cam != null)
-                {
-                    // Ensure no duplicate Watcher: only add if not already present
-                    var existingWatcher = cam.GetComponent<PlanetCameraActivationWatcher>();
-                    if (existingWatcher == null)
-                    {
-                        // Add a lightweight watcher for debug purposes (optional)
-                        cam.gameObject.AddComponent<PlanetCameraActivationWatcher>().parentName = t.name;
-                    }
-
-                    if (cam.gameObject.activeSelf)
-                    {
-                        // Start with cameras disabled
-                        cam.gameObject.SetActive(false);
-                    }
-                }
-                else
-                {
-                    Debug.LogWarningFormat("[PlanetNavigator] No Camera found under planet Transform '{0}'. Expected a child Camera or a GameObject named '{0}Camera'.", t.name);
-                }
+                cam = t.GetComponentInChildren<Camera>(true);
             }
+
+            if (cam != null)
+            {
+                // watcher (debug only)
+                var existingWatcher = cam.GetComponent<PlanetCameraActivationWatcher>();
+                if (existingWatcher == null)
+                {
+                    cam.gameObject.AddComponent<PlanetCameraActivationWatcher>().parentName = t.name;
+                }
+
+                cam.enabled = false;
+                cam.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError($"[PlanetNavigator] No Camera found as a child of planet '{(t != null ? t.name : "NULL")}'.");
+            }
+
+            planetCameras.Add(cam);
+        }
+
+        Debug.Log($"[PlanetNavigator] Counts: transforms={planetTransforms.Count}, cameras={planetCameras.Count}");
+        for (int i = 0; i < planetCameras.Count; i++)
+        {
+            var cam = planetCameras[i];
+            Debug.Log($"  planetCameras[{i}] = {(cam != null ? cam.name : "NULL")}");
         }
 
         // Hide UI canvas initially
@@ -161,20 +121,6 @@ public class PlanetNavigator : MonoBehaviour
         currentPlanetIndex = -1;
     }
 
-    // small helper to get readable path used by logs (we declare it here to keep file self-contained)
-    private string GetHierarchyPath(Transform t)
-    {
-        if (t == null) return "<null>";
-        string path = t.name;
-        var p = t.parent;
-        while (p != null)
-        {
-            path = p.name + "/" + path;
-            p = p.parent;
-        }
-        return path;
-    }
-
     void Update()
     {
         if (navigationActive) return;
@@ -189,7 +135,7 @@ public class PlanetNavigator : MonoBehaviour
                 bool pressedNow = false;
                 if (rightHand.TryGetFeatureValue(CommonUsages.primaryButton, out pressedNow))
                 {
-                    aPressedThisFrame = pressedNow && !_prevAPressed; // edge
+                    aPressedThisFrame = pressedNow && !_prevAPressed; // Edge Detection
                     _prevAPressed = pressedNow;
                 }
                 else
@@ -251,29 +197,17 @@ public class PlanetNavigator : MonoBehaviour
             return;
         }
 
-        // Deactivate previous planet camera if any
-        if (activePlanetCamera != null)
-        {
-            activePlanetCamera.gameObject.SetActive(false);
-            activePlanetCamera = null;
-        }
+        // ðŸ”§Turn OFF all planet cameras first
+        DisableAllPlanetCameras();
 
-        Transform planet = planetTransforms[index];
-        if (planet == null)
-        {
-            Debug.LogError($"[PlanetNavigator] planetTransforms[{index}] is null.");
-            return;
-        }
-
-        // Find Camera under this planet (including inactive)
-        Camera planetCam = planet.GetComponentInChildren<Camera>(true);
+        Camera planetCam = planetCameras[index];
         if (planetCam == null)
         {
-            Debug.LogError($"[PlanetNavigator] No Camera child found under planet '{planet.name}'. Add a Camera GameObject as a child and position it for the close-up view.");
+            Debug.LogError($"[PlanetNavigator] planetCameras[{index}] is null for planet '{planetTransforms[index].name}'.");
             return;
         }
 
-        // Disable HMD camera(s) so planet camera can render, but keep Player rig and controllers active
+        // Disable HMD cameras (same as before)
         disabledHmdCameras = null;
         disabledHmdAudioListener = null;
         if (Player.instance != null)
@@ -302,14 +236,13 @@ public class PlanetNavigator : MonoBehaviour
         }
         else
         {
-            // fallback: disable main camera
             if (Camera.main != null) Camera.main.enabled = false;
         }
 
-        // Start activation in coroutine to avoid conflicts with other scripts that run in Start/Awake
+        // Then activate the desired planet camera
         StartCoroutine(ActivatePlanetCameraCoroutine(planetCam));
 
-        // Update UI and button states
+        // UI & buttons
         UpdateUIForIndex(index);
         if (prevButton != null) prevButton.interactable = index > 0;
         if (nextButton != null) nextButton.interactable = index < planetTransforms.Count - 1;
@@ -373,12 +306,8 @@ public class PlanetNavigator : MonoBehaviour
 
     public void DeactivatePlanetCamera()
     {
-        // Deactivate the active planet camera if present
-        if (activePlanetCamera != null)
-        {
-            activePlanetCamera.gameObject.SetActive(false);
-            activePlanetCamera = null;
-        } 
+        // Turn off ALL planet cameras
+        DisableAllPlanetCameras();
 
         // Restore HMD cameras
         if (disabledHmdCameras != null)
@@ -395,7 +324,6 @@ public class PlanetNavigator : MonoBehaviour
             disabledHmdAudioListener = null;
         }
 
-        // If we added a runtime AudioListener to the planet camera, remove it when exiting
         if (addedPlanetAudioListener != null)
         {
             Destroy(addedPlanetAudioListener);
@@ -403,13 +331,9 @@ public class PlanetNavigator : MonoBehaviour
             Debug.Log("[PlanetNavigator] Removed runtime-added AudioListener from planet camera.");
         }
 
-        // Hide UI canvas after leaving planet view
         if (planetCanvas != null)
         {
             planetCanvas.gameObject.SetActive(false);
-            // Optionally reset to overlay if desired:
-            // planetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            // planetCanvas.worldCamera = null;
         }
     }
 
@@ -442,7 +366,7 @@ public class PlanetNavigator : MonoBehaviour
                     if (planetName == "Mercury")
                         planetDescriptionText.text = "-Orbit: 88 Earth Days\n-No Moons\n-No Rings\n-Second Densest Planet\n-Thinnest Atmosphere\n-Named After The Roman Messenger God";
                     else if (planetName == "Venus")
-                        planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86°F to 158°F\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's\n-Has An Induced Magnetic Field";
+                        planetDescriptionText.text = "-Orbit: 225 Earth Days\n-Takes 117 Earth Days To Rotate\n-Rotates In Retrograde\n-No Moons\n-No Rings\n-Hottest Surface In The Solar System Apart From The Sun\n-Temperature Ranges: 86Â°F to 158Â°F\n-Scientists Believe That Studying The History Of Venus' Creation Can Help Us Better Earth's\n-Has An Induced Magnetic Field";
                     else if (planetName == "EarthModel" || planetName == "Earth")
                         planetDescriptionText.text = "-Orbit: 365 Days\n-Takes 23.9 Hours To Rotate\n-Is The Only Planet In The Solar System With 1 Moon\n-No Rings\n-Composed Of Four Main Layers\n-Global Ocean Covers 71% Of Planet's Surface\n-Atmosphere Consists Of 78% Nitrogen, 21% Oxygen, and 1% Other Gases\n-Named After The Germanic Word \"The Ground\"";
                     else if (planetName == "Mars")
@@ -452,7 +376,7 @@ public class PlanetNavigator : MonoBehaviour
                     else if (planetName == "Saturn")
                         planetDescriptionText.text = "-Orbit: 10,759 Earth Days\n-Takes 10.7 Hours To Rotate (Second Shortest Day In The Solar Systemr\n-Moons: 146\n-Its Rings Are Made Of Billions Of Small Chunks Of Ice And Rocks\n-Composition Is Mostly Made Of Hydrogen And Helium\n-Doesn't Have A True Surface, As It's A Gas Giant\n-Saturn's Magnetic Field Is 578 Times More Powerful Than Earth's";
                     else if (planetName == "Uranus")
-                        planetDescriptionText.text = "-Orbit: 30,687 Earth Days\n-Takes 17 Hours To Rotate\n-Rotates In Retrograde\n-Moons: 28\n-Has Two Sets of Rings\n-Is An Ice Giant That's Made Up Of 80% Of \"Icy\" Materials (Water, Methane, Ammonia)\n-Its Core Heats Up To Around 9,000°F\n-It's Blue Color Is Because Of The Methane\n-Has A Magnetosphere With A Tipped Over Magnetic Axis In It's Rotation By Nearly 60 Degrees";
+                        planetDescriptionText.text = "-Orbit: 30,687 Earth Days\n-Takes 17 Hours To Rotate\n-Rotates In Retrograde\n-Moons: 28\n-Has Two Sets of Rings\n-Is An Ice Giant That's Made Up Of 80% Of \"Icy\" Materials (Water, Methane, Ammonia)\n-Its Core Heats Up To Around 9,000Â°F\n-It's Blue Color Is Because Of The Methane\n-Has A Magnetosphere With A Tipped Over Magnetic Axis In It's Rotation By Nearly 60 Degrees";
                     else if (planetName == "Neptune")
                         planetDescriptionText.text = "-Orbit: 60,190 Earth Days\n-Takes About 16 Hours To Rotate\n-Moons: 16\n-Has At Least 5 Main Rings and 4 Prominent Ring Arcs\n-Is An Ice Giant That's Made Up Of 80% Of \"Icy\" Materials (Water, Methane, Ammonia)\n-Is The First Planet That Was Located Through Mathematical Predictions\n-Has The Strongest Winds In The Solar System\n-Has A Magnetic Field That Is 27 Stronger Than Earth's";
                     else if (planetName == "Pluto")
@@ -617,4 +541,33 @@ public class PlanetNavigator : MonoBehaviour
             Debug.LogFormat("[PlanetNavigator][ActivationWatcher] Camera disabled: '{0}' parent='{1}'", gameObject.name, parentName ?? "(unknown)");
         }
     }
+
+    // Disable all planet cameras (used for cleanup/testing)
+    private void DisableAllPlanetCameras()
+    {
+        foreach (var cam in planetCameras)
+        {
+            if (cam == null) continue;
+            cam.enabled = false;
+            cam.gameObject.SetActive(false);
+        }
+
+        activePlanetCamera = null;
+    }
+
+
+    // Small helper to print a nice hierarchy path in logs
+    private string GetHierarchyPath(Transform t)
+    {
+        if (t == null) return "<null>";
+        string path = t.name;
+        var p = t.parent;
+        while (p != null)
+        {
+            path = p.name + "/" + path;
+            p = p.parent;
+        }
+        return path;
+    }
+
 }

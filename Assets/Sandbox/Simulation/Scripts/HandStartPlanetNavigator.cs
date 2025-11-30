@@ -222,7 +222,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
             if (planetNavigator.nextButton != null)
             {
                 planetNavigator.nextButton.onClick.Invoke();
-                Debug.Log("[HandNav] Right Trigger → NextPlanet");
+                Debug.Log("[HandNav] Right Trigger: NextPlanet");
             }
             else
             {
@@ -236,7 +236,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
             if (planetNavigator.prevButton != null)
             {
                 planetNavigator.prevButton.onClick.Invoke();
-                Debug.Log("[HandNav] Left Trigger → PrevPlanet");
+                Debug.Log("[HandNav] Left Trigger: PrevPlanet");
             }
             else
             {
