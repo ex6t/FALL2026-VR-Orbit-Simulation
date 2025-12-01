@@ -9,6 +9,9 @@ public class HandStartPlanetNavigator : MonoBehaviour
     [Tooltip("Reference to the Hand component on this object (optional)")]
     public Hand hand;
 
+    [Header("Task Checkmarks")]
+    public GameObject planetTaskCheckmark;
+
     // A button: Open Tablet
     public SteamVR_Action_Boolean aButtonAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("AButton");
 
@@ -41,6 +44,10 @@ public class HandStartPlanetNavigator : MonoBehaviour
         if (planetNavigator == null) planetNavigator = FindObjectOfType<PlanetNavigator>();
         if (tabletSummoner == null) tabletSummoner = FindObjectOfType<TabletSummoner>();
         if (tabletMenu == null) tabletMenu = FindObjectOfType<TabletMenu>();
+
+        // Hide Check At Start
+        if (planetTaskCheckmark != null)
+            planetTaskCheckmark.SetActive(false);
     }
 
     void Update()
@@ -95,14 +102,18 @@ public class HandStartPlanetNavigator : MonoBehaviour
                 {
                     if (planetNavigator != null)
                     {
+                        if (planetTaskCheckmark != null)
+                            planetTaskCheckmark.SetActive(true); // Show The Checkmark For Completing The Planet Task
+
                         planetNavigator.ReturnToShip(); // Ends The Planet Task
+
                         Debug.Log("[Hand] B pressed: EndPlanetTask()"); // Debug Log
                     }
                     else
                     {
                         Debug.LogWarning("[Hand] planetNavigator is NULL, cannot EndPlanetTask()"); // Debug Log Warning
                     }
-                    planetTaskStarted = false; // Reset the flag after ending the task
+                    planetTaskStarted = false; // Reset The Planet Task Started Bool
                 }
 
                 else if (tabletSummoner != null) // If The Planet Task Has Not Started, Just Close The Tablet
@@ -186,7 +197,6 @@ public class HandStartPlanetNavigator : MonoBehaviour
                                     planetTaskStarted = true; // Marks that the planet task has started
                                     planetNavigator.StartPlanetTask();
                                     
-
                                 }
                                 else
                                 {
@@ -197,11 +207,13 @@ public class HandStartPlanetNavigator : MonoBehaviour
                             // CASE 2: RED SUN
                             case "RedSunBtn":
                                 Debug.Log("[Hand] X: RedSunBtn selected (TODO: implement action)");
+                                
                                 break;
 
                             // CASE 3: SEASONS
                             case "SeasonsBtn":
                                 Debug.Log("[Hand] X: SeasonsBtn selected (TODO: implement action)");
+                                
                                 break;
 
                             default:

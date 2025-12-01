@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27184
+  GUIID: 27190
 --- !u!1 &149023826
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,7 +961,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &166876502
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1740,7 +1740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27270
+  GUIID: 27276
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -3480,7 +3480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27370
+  GUIID: 27376
 --- !u!1 &567087471
 GameObject:
   m_ObjectHideFlags: 0
@@ -6194,7 +6194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &968671336
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6596,7 +6596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27594
+  GUIID: 27600
 --- !u!1 &1024093416
 GameObject:
   m_ObjectHideFlags: 0
@@ -10876,6 +10876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 1514531628}
+  planetTaskCheckmark: {fileID: 0}
   aButtonAction:
     actionPath: /actions/default/in/AButton
     needsReinit: 0
@@ -12961,7 +12962,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1936259278
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13034,6 +13035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 1936724548}
+  planetTaskCheckmark: {fileID: 1936259277}
   aButtonAction:
     actionPath: /actions/default/in/AButton
     needsReinit: 0

@@ -45,8 +45,8 @@ public class PlanetNavigator : MonoBehaviour
     // the currently active planet camera
     private Camera activePlanetCamera = null;
 
-
     private bool _prevAPressed = false;
+
 
     public void Start()
     {
