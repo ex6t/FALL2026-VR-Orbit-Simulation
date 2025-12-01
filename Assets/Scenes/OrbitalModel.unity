@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27190
+  GUIID: 193146
 --- !u!1 &149023826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,7 +1740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27276
+  GUIID: 193232
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -3480,7 +3480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27376
+  GUIID: 193332
 --- !u!1 &567087471
 GameObject:
   m_ObjectHideFlags: 0
@@ -6596,7 +6596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 27600
+  GUIID: 193556
 --- !u!1 &1024093416
 GameObject:
   m_ObjectHideFlags: 0
@@ -9846,6 +9846,7 @@ MonoBehaviour:
   prevButton: {fileID: 274608764}
   returnToShipButton: {fileID: 858364569}
   shipTransform: {fileID: 1349681854}
+  navDebounceSeconds: 0.15
 --- !u!4 &1386713041
 Transform:
   m_ObjectHideFlags: 0
@@ -11986,6 +11987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2ecba8a5ddb4d419542d4d8959605c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  redSunCompleted: 0
   options:
   - {fileID: 962716439}
   - {fileID: 567087473}
@@ -11994,6 +11996,7 @@ MonoBehaviour:
   - {fileID: 649003870}
   - {fileID: 205206827}
   - {fileID: 362945988}
+  redSunCheckmark: {fileID: 166876501}
 --- !u!4 &1851236202
 Transform:
   m_ObjectHideFlags: 0
