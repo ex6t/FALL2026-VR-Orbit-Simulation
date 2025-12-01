@@ -12,6 +12,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
     [Header("Task Checkmarks")]
     public GameObject planetTaskCheckmark;
 
+    [Header("SteamVR Actions")]
     // A button: Open Tablet
     public SteamVR_Action_Boolean aButtonAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("AButton");
 

@@ -5,16 +5,29 @@ using UnityEngine.EventSystems;
 
 public class TabletMenu : MonoBehaviour
 {
-    [Tooltip("Options in order (top to bottom).")]
+    public bool redSunCompleted = false;
+
+    [Header("Buttons")]
     public List<Selectable> options = new List<Selectable>();
 
-    [Tooltip("Highlight boxes (RedBox1, RedBox2...) in the SAME order as options")]
+    [Header("Highlight Boxes")]
     public List<GameObject> highlightBoxes = new List<GameObject>();
+
+    [Header("Checkmarks")]
+    public GameObject redSunCheckmark; 
+
 
     private int currentIndex = 0;
 
     private void Start()
     {
+        // Load saved state
+        redSunCompleted = PlayerPrefs.GetInt("RedSunCompleted", 0) == 1;
+
+        // Apply the checkmark indicator
+        if (redSunCheckmark != null)
+            redSunCheckmark.SetActive(redSunCompleted);
+
         // Ensure only one highlight starts active
         UpdateHighlight();
 
