@@ -570,4 +570,21 @@ public class PlanetNavigator : MonoBehaviour
         return path;
     }
 
+    private float lastNavTime = -10f;
+    [SerializeField] private float navDebounceSeconds = 0.15f;
+
+    public void nextPlanetFromHand()
+    {
+        if (UnityEngine.Time.unscaledTime - lastNavTime < navDebounceSeconds) return;
+        lastNavTime = Time.unscaledTime;
+        OnNextPlanet();
+    }
+    public void prevPlanetFromHand()
+    {
+        if (UnityEngine.Time.unscaledTime - lastNavTime < navDebounceSeconds) return;
+        lastNavTime = Time.unscaledTime;
+        OnPrevPlanet();
+    }
+
+
 }

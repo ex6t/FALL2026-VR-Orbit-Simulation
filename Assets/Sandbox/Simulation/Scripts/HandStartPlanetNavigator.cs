@@ -233,7 +233,8 @@ public class HandStartPlanetNavigator : MonoBehaviour
         {
             if (planetNavigator.nextButton != null)
             {
-                planetNavigator.nextButton.onClick.Invoke();
+                //planetNavigator.nextButton.onClick.Invoke();
+                planetNavigator.nextPlanetFromHand();
                 Debug.Log("[HandNav] Right Trigger: NextPlanet");
             }
             else
@@ -247,7 +248,8 @@ public class HandStartPlanetNavigator : MonoBehaviour
         {
             if (planetNavigator.prevButton != null)
             {
-                planetNavigator.prevButton.onClick.Invoke();
+                //planetNavigator.prevButton.onClick.Invoke();
+                planetNavigator.prevPlanetFromHand();
                 Debug.Log("[HandNav] Left Trigger: PrevPlanet");
             }
             else
