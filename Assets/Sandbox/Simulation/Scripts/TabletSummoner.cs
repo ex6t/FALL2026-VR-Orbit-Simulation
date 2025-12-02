@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 public class TabletSummoner : MonoBehaviour
 {
     [Header("References")]
-    public Transform playerCamera;      // VR camera
-    public Transform tabletCanvas;      // tablet canvas root
+    public Transform playerCamera; // VR camera
+    public Transform tabletCanvas; // tablet canvas root
 
     [Header("Placement Settings")]
     public float distanceInFront = 1.0f;
@@ -18,12 +18,14 @@ public class TabletSummoner : MonoBehaviour
 
     }
 
+    // FUNCTION TO TOGGLE TABLET
     public void ToggleAndPlaceTablet()
     {
-        if (!IsTabletOpen) OpenTablet();
-        else CloseTablet();
+        if (!IsTabletOpen) OpenTablet(); // Open if closed
+        else CloseTablet(); // Close if already open
     }
 
+    // FUNCTION TO OPEN TABLET
     public void OpenTablet()
     {
         if (tabletCanvas == null || playerCamera == null)
@@ -44,16 +46,14 @@ public class TabletSummoner : MonoBehaviour
 
         tabletCanvas.position = targetPos;
         tabletCanvas.rotation = Quaternion.LookRotation(forward);
-
-        Debug.Log("[TabletSummoner] Opened tablet.");
     }
 
+    // FUNCTION TO CLOSE TABLET
     public void CloseTablet()
     {
         if (tabletCanvas != null)
         {
             tabletCanvas.gameObject.SetActive(false);
-            Debug.Log("[TabletSummoner] Closed tablet.");
         }
     }
 }

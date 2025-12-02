@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class RedSunProgress : MonoBehaviour
 {
-    public static bool redSunCompleted = false; // Tracks if the Red Sun simulation has been completed
+    public static bool redSunCompleted = false; // Tracks If The Red Sun Task Has Been Completed
 }
