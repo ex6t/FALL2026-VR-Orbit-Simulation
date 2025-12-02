@@ -5,8 +5,6 @@ using UnityEngine.EventSystems;
 
 public class TabletMenu : MonoBehaviour
 {
-    public bool redSunCompleted = false;
-
     [Header("Buttons")]
     public List<Selectable> options = new List<Selectable>();
 
@@ -14,19 +12,24 @@ public class TabletMenu : MonoBehaviour
     public List<GameObject> highlightBoxes = new List<GameObject>();
 
     [Header("Checkmarks")]
-    public GameObject redSunCheckmark; 
-
+    public GameObject planetNavCheckmark; // Checkmark for Planetary Navigation completion
+    public GameObject redSunCheckmark; // Checkmark for Red Sun completion
 
     private int currentIndex = 0;
 
     private void Start()
     {
-        // Load saved state
-        redSunCompleted = PlayerPrefs.GetInt("RedSunCompleted", 0) == 1;
+        // PLANET NAV CHECKMARK
+        if (planetNavCheckmark != null)
+        {
+            planetNavCheckmark.SetActive(PlanetNavProgress.planetNavCompleted);
+        }
 
-        // Apply the checkmark indicator
+        // RED SUN CHECKMARK
         if (redSunCheckmark != null)
-            redSunCheckmark.SetActive(redSunCompleted);
+        {
+            redSunCheckmark.SetActive(RedSunProgress.redSunCompleted);
+        }
 
         // Ensure only one highlight starts active
         UpdateHighlight();

@@ -27,7 +27,7 @@ public class HandS3MenuInput : MonoBehaviour
         // A Button: Continue To Next Scene
         if (aButtonAction != null && aButtonAction.GetStateDown(hand.handType))
         {
-            PlayerPrefs.SetInt("RedSunCompleted", 1); // Sets The Red Sun Task As Completed
+            RedSunProgress.redSunCompleted = true; // Mark Red Sun Simulation As Completed
             SceneManager.LoadScene("OrbitalModel"); // Continue The Main Scene
         }
     }

@@ -642,7 +642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 192058
+  GUIID: 71142
 --- !u!1001 &208079912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1075,7 +1075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 192092
+  GUIID: 71176
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -2146,7 +2146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 192144
+  GUIID: 71228
 --- !u!1001 &574775552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3652,7 +3652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 192238
+  GUIID: 71322
 --- !u!1 &1031570123
 GameObject:
   m_ObjectHideFlags: 0
@@ -7451,7 +7451,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 1936724548}
-  redSunCompleted: 0
   aButtonAction:
     actionPath: /actions/default/in/AButton
     needsReinit: 0
@@ -9340,8 +9339,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3080991875850473764, guid: 8972194970c32ae4480e8a99f3faea59, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9058217303191734954}
   m_SourcePrefab: {fileID: 100100000, guid: 8972194970c32ae4480e8a99f3faea59, type: 3}
+--- !u!1 &9058217303191734952 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3080991875850473764, guid: 8972194970c32ae4480e8a99f3faea59, type: 3}
+  m_PrefabInstance: {fileID: 9058217303191734951}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &9058217303191734953 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4601382762434914177, guid: 8972194970c32ae4480e8a99f3faea59, type: 3}
+  m_PrefabInstance: {fileID: 9058217303191734951}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9058217303191734954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9058217303191734952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c5e62e4c55e7604a9cb3dff3a1ccca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sunRenderer: {fileID: 9058217303191734953}
+  duration: 10
+  triggerOnStart: 1
+  triggerOnPlayerEnter: 0
+  playerTag: Player
+  animateEmission: 0
+  emissionIntensity: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

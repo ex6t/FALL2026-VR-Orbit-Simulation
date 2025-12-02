@@ -106,6 +106,7 @@ public class HandStartPlanetNavigator : MonoBehaviour
                         if (planetTaskCheckmark != null)
                             planetTaskCheckmark.SetActive(true); // Show The Checkmark For Completing The Planet Task
 
+                        PlanetNavProgress.planetNavCompleted = true; // Marks The Planet Navigation Task As Completed
                         planetNavigator.ReturnToShip(); // Ends The Planet Task
 
                         Debug.Log("[Hand] B pressed: EndPlanetTask()"); // Debug Log
