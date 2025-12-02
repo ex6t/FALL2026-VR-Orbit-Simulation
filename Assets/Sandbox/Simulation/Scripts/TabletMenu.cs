@@ -12,8 +12,9 @@ public class TabletMenu : MonoBehaviour
     public List<GameObject> highlightBoxes = new List<GameObject>();
 
     [Header("Checkmarks")]
-    public GameObject planetNavCheckmark; // Checkmark for Planetary Navigation completion
-    public GameObject redSunCheckmark; // Checkmark for Red Sun completion
+    public GameObject planetNavCheckmark; // Checkmark For Planetary Navigation Completion
+    public GameObject redSunCheckmark; // Checkmark For Red Sun Completion
+    public GameObject seasonsCheckmark; // Checkmark For Seasons Completion
 
     private int currentIndex = 0;
 
@@ -22,13 +23,19 @@ public class TabletMenu : MonoBehaviour
         // PLANET NAV CHECKMARK
         if (planetNavCheckmark != null)
         {
-            planetNavCheckmark.SetActive(PlanetNavProgress.planetNavCompleted);
+            planetNavCheckmark.SetActive(PlanetNavProgress.planetNavCompleted); // Sets Planet Nav Checkmark Based On PlanetNavProgress
         }
 
         // RED SUN CHECKMARK
         if (redSunCheckmark != null)
         {
-            redSunCheckmark.SetActive(RedSunProgress.redSunCompleted);
+            redSunCheckmark.SetActive(RedSunProgress.redSunCompleted); // Sets Red Sun Checkmark Based On RedSunProgress
+        }
+
+        // SEASONS CHECKMARK
+        if (seasonsCheckmark != null)
+        {
+            seasonsCheckmark.SetActive(SeasonsProgress.seasonsCompleted); // Sets Seasons Checkmark Based On SeasonsProgress
         }
 
         // Ensure only one highlight starts active

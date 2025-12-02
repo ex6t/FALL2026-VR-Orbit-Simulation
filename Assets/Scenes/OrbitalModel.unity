@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 83938
+  GUIID: 257334
 --- !u!1 &149023826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,7 +1740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 84024
+  GUIID: 257420
 --- !u!4 &334956239 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400012, guid: 71f6b54e2e708df4db10865532ccfe85, type: 3}
@@ -3480,7 +3480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 84124
+  GUIID: 257520
 --- !u!1 &567087471
 GameObject:
   m_ObjectHideFlags: 0
@@ -6596,7 +6596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b69eb3f1c55974bb1bcc1dbc547a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GUIID: 84348
+  GUIID: 257744
 --- !u!1 &1024093416
 GameObject:
   m_ObjectHideFlags: 0
@@ -11997,6 +11997,7 @@ MonoBehaviour:
   - {fileID: 362945988}
   planetNavCheckmark: {fileID: 1936259277}
   redSunCheckmark: {fileID: 166876501}
+  seasonsCheckmark: {fileID: 968671335}
 --- !u!4 &1851236202
 Transform:
   m_ObjectHideFlags: 0
@@ -12104,7 +12105,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Seasons
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1856199033

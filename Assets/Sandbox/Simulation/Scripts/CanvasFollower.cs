@@ -2,51 +2,52 @@ using UnityEngine;
 
 public class CanvasFollower : MonoBehaviour
 {
-    [Header("References")]
-    public Transform playerCamera;   // VR camera (head)
-    public Transform canvasRoot;     // The canvas/root object to move
+    [Header("Target to follow")]
+    public Transform playerCamera;      // VR camera / head
 
     [Header("Placement Settings")]
-    public float distanceInFront = 1.0f;   // How far in front of the player
-    public float heightOffset = -0.2f;   // Offset up/down relative to camera
+    public float distanceInFront = 1.2f;
+    public float heightOffset = 0.0f;
 
     [Header("Rotation")]
-    public bool keepUpright = true;        // Ignore camera tilt so canvas stays level
+    public bool keepUpright = true;   // ignore camera tilt
+    public bool faceCamera = true;   // turn to face the player
 
-    private void LateUpdate()
+    void LateUpdate()
     {
-        if (playerCamera == null || canvasRoot == null) return;
+        if (playerCamera == null) return;
 
-        // Direction in front of camera
+        // Direction in front of the camera
         Vector3 forward = playerCamera.forward;
 
         if (keepUpright)
         {
-            // Keep canvas level (no pitching up/down)
             forward.y = 0f;
             if (forward.sqrMagnitude < 0.0001f)
-                return;
+                forward = playerCamera.forward;
             forward.Normalize();
         }
 
-        // Position in front of the player
+        // Position canvas in front of the player
         Vector3 targetPos =
             playerCamera.position +
             forward * distanceInFront +
             Vector3.up * heightOffset;
 
-        canvasRoot.position = targetPos;
+        transform.position = targetPos;
 
-        // Make the canvas face the player
-        if (keepUpright)
+        // Rotate to face the player
+        if (faceCamera)
         {
-            canvasRoot.rotation = Quaternion.LookRotation(forward);
-        }
-        else
-        {
-            // Fully face the camera, including tilt
-            Vector3 lookDir = canvasRoot.position - playerCamera.position;
-            canvasRoot.rotation = Quaternion.LookRotation(lookDir);
+            if (keepUpright)
+            {
+                transform.rotation = Quaternion.LookRotation(forward);
+            }
+            else
+            {
+                Vector3 lookDir = transform.position - playerCamera.position;
+                transform.rotation = Quaternion.LookRotation(lookDir);
+            }
         }
     }
 }
