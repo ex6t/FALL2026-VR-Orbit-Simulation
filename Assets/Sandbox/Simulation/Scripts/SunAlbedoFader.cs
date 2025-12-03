@@ -1,6 +1,20 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System;
 
+/// <summary>
+/// Fades the albedo/tint of a sun material from white (255,255,255) to red (255,0,0).
+/// - Attach this to the Sun GameObject (or any GameObject) and assign the Renderer in the inspector,
+///   or leave the Renderer empty to auto-find one on the same GameObject.
+/// - You can start the fade automatically when the scene starts (triggerOnStart = true),
+///   or start it when the player enters a trigger collider on this GameObject (triggerOnPlayerEnter = true).
+/// Notes:
+/// - This attempts to set common color properties used by Unity shaders:
+///   "_BaseColor" (URP/Shader Graph), "_Color" (Built-in), and falls back to renderer.material.color.
+/// - If the material uses emission and has "_EmissionColor", this script will also animate emission.
+/// </summary>
 public class SunAlbedoFader : MonoBehaviour
 {
     [Header("Target")]
@@ -30,6 +44,41 @@ public class SunAlbedoFader : MonoBehaviour
 
     [Tooltip("Multiplier applied to the emission color when animating. Set to 0 to effectively disable emission output even if animateEmission is true.")]
     public float emissionIntensity = 1f;
+
+    [Header("Scale (optional)")]
+    [Tooltip("Animate the GameObject local scale while fading color.")]
+    public bool animateScale = true;
+
+    [Tooltip("Starting local scale for the object when fading begins.")]
+    public Vector3 startScale = new Vector3(0.75f, 0.75f, 0.75f);
+
+    [Tooltip("Ending local scale for the object when fading finishes.")]
+    public Vector3 endScale = new Vector3(1.05f, 1.05f, 1.05f);
+
+    [Header("Timer UI (optional)")]
+    [Tooltip("World-space Canvas that will display the timer. If empty, no timer is shown.")]
+    public Canvas timerCanvas;
+
+    [Tooltip("UI Text (under the canvas) used to show the year. Assign a Text child from the canvas.")]
+    public Text timerText;
+
+    [Tooltip("TextMesh Pro UGUI text (preferred for crisp VR text). If assigned this will be used instead of UnityEngine.UI.Text.")]
+    public TextMeshProUGUI timerTextTMP;
+
+    [Tooltip("If true, the script will parent the timer canvas to the Sun transform. If false, the canvas is left where you placed it in the scene.")]
+    public bool parentTimerToSun = false;
+
+    [Tooltip("Local position of the timer canvas relative to the sun when placed in world-space.")]
+    public Vector3 timerLocalPosition = new Vector3(0f, 2f, 0f);
+
+    [Tooltip("Local scale for the timer canvas (world-space canvases are often scaled small).")]
+    public Vector3 timerLocalScale = new Vector3(0.01f, 0.01f, 0.01f);
+
+    [Tooltip("Starting year shown on the timer.")]
+    public long timerStartYear = 2025L;
+
+    [Tooltip("Ending year shown on the timer.")]
+    public long timerEndYear = 1000002025L; // 1,000,002,025
 
     // Internal material instance we modify at runtime
     //private Material instancedMaterial;
@@ -84,6 +133,54 @@ public class SunAlbedoFader : MonoBehaviour
         // Ensure the renderer starts with the expected color
         ApplyColorToBlock(startColor);
 
+        // Ensure the object's initial scale is the requested start scale when animating scale
+        if (animateScale)
+        {
+            try { transform.localScale = startScale; } catch { }
+        }
+
+        // Setup timer canvas (world-space) if provided
+        if (timerCanvas != null)
+        {
+            try
+            {
+                timerCanvas.renderMode = RenderMode.WorldSpace;
+
+                // Parenting is optional: if the user wants manual placement, leave the canvas where it is.
+                if (parentTimerToSun)
+                {
+                    timerCanvas.transform.SetParent(transform, false);
+                    timerCanvas.transform.localPosition = timerLocalPosition;
+                    timerCanvas.transform.localRotation = Quaternion.identity;
+                    timerCanvas.transform.localScale = timerLocalScale;
+                }
+                else
+                {
+                    // If not parenting, only apply local scale (so world-space size is reasonable)
+                    timerCanvas.transform.localScale = timerLocalScale;
+                }
+
+                // Try to auto-find a TMP/Text child if none assigned
+                if (timerTextTMP == null && timerText == null)
+                {
+                    var tmp = timerCanvas.GetComponentInChildren<TextMeshProUGUI>(true);
+                    if (tmp != null) timerTextTMP = tmp;
+                    else
+                    {
+                        var t = timerCanvas.GetComponentInChildren<Text>(true);
+                        if (t != null) timerText = t;
+                    }
+                }
+
+                // Initialize displayed value
+                if (timerTextTMP != null) timerTextTMP.text = timerStartYear.ToString("N0");
+                else if (timerText != null) timerText.text = timerStartYear.ToString("N0");
+
+                // Don't forcibly activate the canvas if the user deliberately disabled it; respect current active state.
+            }
+            catch { }
+        }
+
         if (triggerOnStart)
         {
             StartFade();
@@ -119,11 +216,50 @@ public class SunAlbedoFader : MonoBehaviour
 
             ApplyColorToBlock(c);
 
+            // Animate local scale from startScale to endScale over the same duration
+            if (animateScale)
+            {
+                try
+                {
+                    transform.localScale = Vector3.Lerp(startScale, endScale, t);
+                }
+                catch { }
+            }
+
+            // Update world-space timer (if available)
+            if (timerCanvas != null && (timerTextTMP != null || timerText != null))
+            {
+                try
+                {
+                    double year = (1.0 - t) * timerStartYear + t * timerEndYear;
+                    long y = (long)Math.Round(year);
+                    string s = y.ToString("N0");
+                    if (timerTextTMP != null) timerTextTMP.text = s;
+                    else if (timerText != null) timerText.text = s;
+                }
+                catch { }
+            }
+
             yield return null;
         }
 
         // Ensure final color is exact
         ApplyColorToBlock(endColor);
+        if (animateScale)
+        {
+            try { transform.localScale = endScale; } catch { }
+        }
+        // Final timer value
+        if (timerCanvas != null && (timerTextTMP != null || timerText != null))
+        {
+            try
+            {
+                string s = timerEndYear.ToString("N0");
+                if (timerTextTMP != null) timerTextTMP.text = s;
+                else if (timerText != null) timerText.text = s;
+            }
+            catch { }
+        }
         isFading = false;
     }
 
