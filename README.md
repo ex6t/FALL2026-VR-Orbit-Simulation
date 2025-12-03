@@ -116,7 +116,8 @@ In Fall 2025, our group expanded the original project by adding a 2D Task Tablet
 * Upgrade to Unity 2026 or the newest available version.
 * Create a tidal‑wave minigame showing lunar gravitational influence.
 * Create a solar‑wave minigame focusing on sun‑based radiation/wave patterns.
-* Add a ground‑level seasons perspective where players watch the sun move throughout the year.
+* For seasons, add a ground‑level seasons perspective where players watch the sun move throughout the year.
+* Turn the coordinates on the Earth off/on
 
 ---
 
