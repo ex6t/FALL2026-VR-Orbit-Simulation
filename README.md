@@ -112,11 +112,11 @@ In Fall 2025, our group expanded the original project by adding a 2D Task Tablet
 
 ## 📈 Ideas for Future Groups
 
-* Build a **tutorial or intro scene** for first‑time VR users.
-* Upgrade to **Unity 2026** or the newest available version.
-* Create a **tidal‑wave minigame** showing lunar gravitational influence.
-* Create a **solar‑wave minigame** focusing on sun‑based radiation/wave patterns.
-* Add a **ground‑level seasons perspective** where players watch the sun move throughout the year.
+* Build a tutorial or intro scene for first‑time VR users.
+* Upgrade to Unity 2026 or the newest available version.
+* Create a tidal‑wave minigame showing lunar gravitational influence.
+* Create a solar‑wave minigame focusing on sun‑based radiation/wave patterns.
+* Add a ground‑level seasons perspective where players watch the sun move throughout the year.
 
 ---
 
