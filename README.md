@@ -121,10 +121,13 @@ In Fall 2025, our group expanded the original project by adding a 2D Task Tablet
 ---
 
 ## 🪐 Acknowledgements
+**This project was created in collaboration with Dr. Kostadinov, whose MATLAB code and research were translated into C# for use in this simulation! We also appreciate the help and feedback he's provided for us in order to make this project.**
+* Earth Orbit Research Paper: https://gmd.copernicus.org/articles/7/1051/2014/
+* Earth Orbit Model Source Code: https://zenodo.org/records/4346609
 
 * CS490 faculty & advisors
 * Unity XR documentation
 * NASA data resources
-* Original 2022 Capstone Project Was Created By @williamphong
+* First Verion Of The Capstone Project Was Created By @williamphong
 
 ---
