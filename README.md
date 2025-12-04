@@ -126,10 +126,16 @@ In Fall 2025, our group expanded the original project by adding a 2D Task Tablet
 * Earth Orbit Research Paper: https://gmd.copernicus.org/articles/7/1051/2014/
 * Earth Orbit Model Source Code: https://zenodo.org/records/4346609
 
-We Also Appreciate The Help Of:
+**We Also Appreciate The Help Of:**
 * CS490 faculty & advisors
 * Unity XR documentation
 * NASA data resources
 * First Verion Of The Capstone Project Was Created By @williamphong
+
+**This Project Was Developed By:**
+* Kelly Frear @kellylfrear
+* Gavin Rosander @rosanderg913
+* Arpita Godbole @arpitag2025
+* Daniel Pangilian @dpg2003
 
 ---
