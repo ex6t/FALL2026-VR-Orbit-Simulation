@@ -1,10 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Follow the planet's position but compute rotation independently so the camera watches the planet spin.
-/// This variant computes a safe distance from the planet surface using the combined renderer bounds,
-/// preventing the camera from being placed inside large planets (like Jupiter).
-/// </summary>
+
 [RequireComponent(typeof(Camera))]
 public class PlanetCameraController : MonoBehaviour
 {
@@ -40,7 +36,7 @@ public class PlanetCameraController : MonoBehaviour
     [Tooltip("If > 0, this will be used as the planet radius instead of estimating from renderers.")]
     public float radiusOverride = 0f;
 
-    // internal
+    // Internal
     private float orbitAngle = 0f;
 
     void Start()

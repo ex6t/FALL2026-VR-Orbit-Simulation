@@ -2,14 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// HubStationMover
-/// Attach this to the Button (or a small manager on the podium) and wire the Button's OnClick to one of the public methods.
-/// - Configure `hubStation` (the Transform to move). If left empty the script will try to find a GameObject named `hubStationName`.
-/// - Add target marker Transforms to `targets` (empty GameObjects placed in-scene where you want the Hub Station to move).
-/// - Use MoveToNext / MoveToPrevious for cycling, or call MoveToIndex(int index) from the Button's OnClick (you can pass an int parameter).
-/// - Optionally enable `smoothMove` to animate the motion and rotation.
-/// </summary>
+
 public class HubStationMover : MonoBehaviour
 {
     [Header("References")]
@@ -29,7 +22,6 @@ public class HubStationMover : MonoBehaviour
     [Tooltip("Duration (seconds) for smooth movement.")]
     public float smoothDuration = 1.0f;
 
-    // internal index
     private int currentIndex = -1;
     private Coroutine movingCoroutine = null;
 
@@ -48,9 +40,7 @@ public class HubStationMover : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Move the hub station to the next target (wraps around).
-    /// </summary>
+    // FUNCTION TO MOVE TO NEXT TARGET
     public void MoveToNext()
     {
         if (targets == null || targets.Count == 0) return;
@@ -58,9 +48,7 @@ public class HubStationMover : MonoBehaviour
         MoveToIndex(next);
     }
 
-    /// <summary>
-    /// Move the hub station to the previous target (wraps around).
-    /// </summary>
+    // FUNCTION TO MOVE TO PREVIOUS TARGET
     public void MoveToPrevious()
     {
         if (targets == null || targets.Count == 0) return;
@@ -68,10 +56,7 @@ public class HubStationMover : MonoBehaviour
         MoveToIndex(prev);
     }
 
-    /// <summary>
-    /// Move the hub station to the given index in targets.
-    /// This method is public so you can assign it to a Button and pass an int argument.
-    /// </summary>
+    // FUNCTION TO MOVE TO SPECIFIC TARGET INDEX
     public void MoveToIndex(int index)
     {
         if (targets == null || targets.Count == 0)
@@ -98,12 +83,12 @@ public class HubStationMover : MonoBehaviour
             return;
         }
 
-        // stop any previous motion
+        // Stops Any Movement In Progress
         if (movingCoroutine != null) StopCoroutine(movingCoroutine);
 
         if (!smoothMove || smoothDuration <= 0f)
         {
-            // instant teleport
+            // Teleport Instantly
             hubStation.position = t.position;
             hubStation.rotation = t.rotation;
         }
@@ -113,9 +98,7 @@ public class HubStationMover : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Teleport the hub station to a raw world position (no rotation change).
-    /// </summary>
+    // FUNCTION TO TELEPORT TO AN ARBITRARY WORLD POSITION
     public void TeleportToPosition(Vector3 worldPosition)
     {
         if (hubStation == null) return;
@@ -142,7 +125,7 @@ public class HubStationMover : MonoBehaviour
         movingCoroutine = null;
     }
 
-    // convenience: call this to move to a named target (useful from other scripts)
+    // IF YOU WANT TO MOVE TO A TARGET BY NAME
     public void MoveToTargetByName(string name)
     {
         if (targets == null) return;
@@ -157,7 +140,7 @@ public class HubStationMover : MonoBehaviour
         Debug.LogWarning($"[HubStationMover] MoveToTargetByName: no target named '{name}' found.");
     }
 
-    // small debug helpers
+    // SMALL EDITOR CONTEXT MENU HELPERS
     [ContextMenu("MoveToNext (Editor)")]
     void ContextMoveNext() { MoveToNext(); }
     [ContextMenu("MoveToPrevious (Editor)")]

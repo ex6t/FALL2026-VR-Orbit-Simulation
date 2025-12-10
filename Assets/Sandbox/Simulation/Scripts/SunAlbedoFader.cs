@@ -4,17 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-/// <summary>
-/// Fades the albedo/tint of a sun material from white (255,255,255) to red (255,0,0).
-/// - Attach this to the Sun GameObject (or any GameObject) and assign the Renderer in the inspector,
-///   or leave the Renderer empty to auto-find one on the same GameObject.
-/// - You can start the fade automatically when the scene starts (triggerOnStart = true),
-///   or start it when the player enters a trigger collider on this GameObject (triggerOnPlayerEnter = true).
-/// Notes:
-/// - This attempts to set common color properties used by Unity shaders:
-///   "_BaseColor" (URP/Shader Graph), "_Color" (Built-in), and falls back to renderer.material.color.
-/// - If the material uses emission and has "_EmissionColor", this script will also animate emission.
-/// </summary>
+
 public class SunAlbedoFader : MonoBehaviour
 {
     [Header("Target")]
