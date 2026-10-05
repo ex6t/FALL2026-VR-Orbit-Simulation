@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Animator whose speed is set based on a linear mapping
 //
@@ -16,7 +16,7 @@ namespace Valve.VR.InteractionSystem
 		public GameObject masterControl;
 		SimulationController simuControl;
 
-		private float currentLinearMapping = 0.5f;
+		private float currentLinearMapping = float.NaN;
 
 
 		//-------------------------------------------------
@@ -32,6 +32,11 @@ namespace Valve.VR.InteractionSystem
 				linearMapping = GetComponent<LinearMapping>();
 			}
 
+			if (linearMapping != null && linearMapping.value <= 0f)
+			{
+				linearMapping.value = 0.5f;
+			}
+
 			simuControl.simulationSpeed = 1f;
 		}
 
@@ -39,6 +44,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Update()
 		{
+			if (linearMapping == null || simuControl == null)
+				return;
+
 			if (currentLinearMapping != linearMapping.value)
 			{
 				currentLinearMapping = linearMapping.value;

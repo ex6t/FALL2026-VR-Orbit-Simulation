@@ -228,6 +228,7 @@ GameObject:
   - 114: {fileID: 11450312}
   - 114: {fileID: 114000011273627542}
   - 114: {fileID: 114000011734077242}
+  - 114: {fileID: 11471617101}
   m_Layer: 26
   m_Name: LeftHand
   m_TagString: Untagged
@@ -246,6 +247,7 @@ GameObject:
   - 114: {fileID: 11401046}
   - 114: {fileID: 114000011957598740}
   - 114: {fileID: 114000010591715100}
+  - 114: {fileID: 11471617102}
   m_Layer: 26
   m_Name: RightHand
   m_TagString: Untagged
@@ -650,6 +652,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 402768}
   m_RootOrder: 0
+--- !u!114 &11471617101
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c716a7a1141448d79f6ff8e46f73f171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllerNode: 4
+  driveControllerPose: 1
+  createFallbackVisual: 1
+  createFallbackRay: 1
+  fallbackRayLength: 4
+--- !u!114 &11471617102
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c716a7a1141448d79f6ff8e46f73f171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllerNode: 5
+  driveControllerPose: 1
+  createFallbackVisual: 1
+  createFallbackRay: 1
+  fallbackRayLength: 4
 --- !u!20 &2014920
 Camera:
   m_ObjectHideFlags: 1
