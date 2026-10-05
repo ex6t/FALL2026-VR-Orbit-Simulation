@@ -42,6 +42,7 @@ GameObject:
   - 114: {fileID: 114000013560920582}
   - 114: {fileID: 114000013988111622}
   - 114: {fileID: 114000013679779266}
+  - 114: {fileID: 114420780600000001}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -229,3 +230,81 @@ MonoBehaviour:
   engaged: 0
   buttonDown: 0
   buttonUp: 0
+--- !u!114 &114420780600000001
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000014042078020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c4207c80a8a4b59a4dd19feafdf6044, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_InteractionManager: {fileID: 0}
+  m_InteractionLayerMask:
+    m_Bits: 4294967295
+  m_Colliders:
+  - {fileID: 65000013228355604}
+  m_CustomReticle: {fileID: 0}
+  m_SelectMode: 0
+  m_FocusMode: 1
+  m_StartingSelectedInteractable: {fileID: 0}
+  m_AllowGazeInteraction: 0
+  m_AllowGazeSelect: 0
+  m_OverrideGazeTimeToSelect: 0
+  m_GazeTimeToSelect: 0.5
+  m_OverrideTimeToAutoDeselectGaze: 0
+  m_TimeToAutoDeselectGaze: 3
+  m_AllowGazeAssistance: 0
+  m_FirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstFocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastFocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  onPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  movingPart: {fileID: 4000012118917698}
+  localPressOffset: {x: 0, y: -0.5, z: 0}
+  pressReturnSpeed: 12
+  cooldown: 0.35
+  allowTriggerPress: 1
+  invokeLegacySteamVREvents: 1

@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -16,6 +17,7 @@ public class XRPressableButton : XRSimpleInteractable
     [Header("Input")]
     public float cooldown = 0.35f;
     public bool allowTriggerPress = true;
+    public bool invokeLegacySteamVREvents = true;
 
     private Vector3 startPosition;
     private float lastPressedTime = -999f;
@@ -80,6 +82,36 @@ public class XRPressableButton : XRSimpleInteractable
             movingPart.localPosition = startPosition + localPressOffset;
 
         onPressed?.Invoke();
+
+        if (invokeLegacySteamVREvents)
+            InvokeLegacySteamVRButtonEvents();
+    }
+
+    private void InvokeLegacySteamVRButtonEvents()
+    {
+        Component legacyButton = GetComponent("Valve.VR.InteractionSystem.HoverButton");
+        if (legacyButton == null)
+            return;
+
+        InvokeLegacyHandEvent(legacyButton, "onButtonDown");
+        InvokeLegacyHandEvent(legacyButton, "onButtonIsPressed");
+    }
+
+    private void InvokeLegacyHandEvent(Component legacyButton, string fieldName)
+    {
+        FieldInfo eventField = legacyButton.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public);
+        if (eventField == null)
+            return;
+
+        object handEvent = eventField.GetValue(legacyButton);
+        if (handEvent == null)
+            return;
+
+        MethodInfo invokeMethod = handEvent.GetType().GetMethod("Invoke");
+        if (invokeMethod == null)
+            return;
+
+        invokeMethod.Invoke(handEvent, new object[] { null });
     }
 
     private bool IsLikelyInteractor(Collider other)
