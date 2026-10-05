@@ -4,7 +4,7 @@ using UnityEngine;
 public class MarsOrbit : MonoBehaviour
 {
     public GameObject MarsMasterControl;
-    SimulationController simuControl;
+    private SimulationController marsSimuControl;
 
     public OverlayFeed MarsDataFeed;
     public float MarsOrbitDuration = 686.92971f; // // Mars year in earth days
@@ -19,12 +19,12 @@ public class MarsOrbit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        simuControl = MarsMasterControl.GetComponent<SimulationController>();
+        marsSimuControl = MarsMasterControl.GetComponent<SimulationController>();
     }
     // Update is called once per frame
     void Update()
     {
-        transform.localPosition = getMarsPosition(simuControl.currentTime);
+        transform.localPosition = getMarsPosition(marsSimuControl.currentTime);
     }
 
     Vector3 getMarsPosition(float time)
