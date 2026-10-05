@@ -24,6 +24,5 @@ EditorBuildSettings:
     path: Assets/Scenes/Seasons.unity
     guid: a17e03b87b57d384f91323577256592c
   m_configObjects:
-    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: c79d71dbde3c7a342899e4f881fdf96b, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 2bcf26312d04b7a4289b0fd24abbe631, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: cb5f847b5d462472ab53a1387db1c0d8, type: 2}

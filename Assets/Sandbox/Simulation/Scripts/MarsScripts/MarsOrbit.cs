@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class MarsOrbit : Orbit
+public class MarsOrbit : MonoBehaviour
 {
     public GameObject MarsMasterControl;
     SimulationController simuControl;
