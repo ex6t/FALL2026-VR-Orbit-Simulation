@@ -79,12 +79,32 @@ public class TabletMenu : MonoBehaviour
         return null;
     }
 
+    public void ConfirmCurrent()
+    {
+        var option = GetCurrentOption();
+        if (option == null)
+        {
+            Debug.LogWarning("[TabletMenu] ConfirmCurrent called but no current option.");
+            return;
+        }
+
+        if (option.TryGetComponent<Button>(out Button button))
+        {
+            button.onClick.Invoke();
+            return;
+        }
+
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(option.gameObject);
+    }
+
     private void SelectCurrent()
     {
         var option = GetCurrentOption();
         if (option != null)
         {
-            EventSystem.current.SetSelectedGameObject(option.gameObject);
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(option.gameObject);
             Debug.Log("[TabletMenu] Selected: " + option.name);
         }
     }

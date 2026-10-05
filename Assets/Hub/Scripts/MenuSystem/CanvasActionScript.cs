@@ -2,36 +2,39 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
+using UnityEngine.XR;
 
 public class CanvasActionScript : MonoBehaviour
 {
-    // a reference to the action
-    public SteamVR_Action_Boolean MenuOnOff;
-// a reference to the hand
-    public SteamVR_Input_Sources handType;
-//reference to the Menu
     public GameObject Menu;
-    // Start is called before the first frame update
+    private bool previousMenuButton;
+
     void Start()
     {
-        Menu.SetActive(false);
-        MenuOnOff.AddOnStateDownListener(ButtonDown, handType);
-        MenuOnOff.AddOnStateUpListener(ButtonUp, handType);
+        if (Menu != null)
+            Menu.SetActive(false);
     }
-    public void ButtonUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+
+    public void ButtonUp()
     {
         Debug.Log("Button is up");
-        Menu.SetActive(false);
+        if (Menu != null)
+            Menu.SetActive(false);
     }
-    public void ButtonDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+
+    public void ButtonDown()
     {
         Debug.Log("Button is down");
-        Menu.SetActive(true);
+        if (Menu != null)
+            Menu.SetActive(true);
     }
 
     void Update()
     {
-        
+        if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.SecondaryButton, KeyCode.M, ref previousMenuButton))
+        {
+            if (Menu != null)
+                Menu.SetActive(!Menu.activeSelf);
+        }
     }
 }

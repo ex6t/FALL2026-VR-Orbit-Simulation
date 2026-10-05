@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
+using UnityEngine.XR;
+
 public class MenuManager : MonoBehaviour
-{  
+{
   public Panel currentPanel = null;
   private List<Panel> panelHistory = new List<Panel>();
-  public SteamVR_Action_Boolean triggerAction;
-  public SteamVR_Input_Sources handType;
+  private bool previousBackButton;
 
   private void Start()
   {
@@ -23,7 +23,7 @@ private void SetupPanels()
   }
   private void Update()
   {
-    if (triggerAction.GetStateDown(handType)) //user input
+    if (XRInputButtons.GetButtonDown(XRNode.LeftHand, XRMenuButton.SecondaryButton, KeyCode.Backspace, ref previousBackButton))
       GoToPrevious();
   }
   public void GoToPrevious()
@@ -45,6 +45,6 @@ private void SetupPanels()
         currentPanel.Hide();
         currentPanel = newPanel;
         currentPanel.Show();
-        
+
   }
 }

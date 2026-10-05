@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using UnityEngine.EventSystems;
-using Valve.VR.InteractionSystem;
 
 
 public class PlanetNavigator : MonoBehaviour
@@ -45,8 +44,7 @@ public class PlanetNavigator : MonoBehaviour
     // the currently active planet camera
     private Camera activePlanetCamera = null;
 
-    private bool _prevAPressed = false;
-
+    private Transform playerRigTransform = null;
 
     public void Start()
     {
@@ -125,34 +123,9 @@ public class PlanetNavigator : MonoBehaviour
     {
         if (navigationActive) return;
 
-        bool aPressedThisFrame = false;
-
-        try
-        {
-            var rightHand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
-            if (rightHand.isValid)
-            {
-                bool pressedNow = false;
-                if (rightHand.TryGetFeatureValue(CommonUsages.primaryButton, out pressedNow))
-                {
-                    aPressedThisFrame = pressedNow && !_prevAPressed; // Edge Detection
-                    _prevAPressed = pressedNow;
-                }
-                else
-                {
-                    _prevAPressed = false;
-                }
-            }
-            else
-            {
-                _prevAPressed = false;
-            }
-        }
-        catch { }
-
         bool keyboardPressedThisFrame = Input.GetKeyDown(KeyCode.Space);
 
-        if (aPressedThisFrame || keyboardPressedThisFrame)
+        if (keyboardPressedThisFrame)
         {
             Debug.Log("[PlanetNavigator] Start input detected. keyboard=" + keyboardPressedThisFrame);
             StartPlanetTask();
@@ -207,36 +180,34 @@ public class PlanetNavigator : MonoBehaviour
             return;
         }
 
-        // Disable HMD cameras (same as before)
+        // Disable the active XR/player camera before switching to the planet camera.
         disabledHmdCameras = null;
         disabledHmdAudioListener = null;
-        if (Player.instance != null)
-        {
-            Transform hmd = Player.instance.hmdTransform;
-            if (hmd != null)
-            {
-                var cams = hmd.GetComponentsInChildren<Camera>(true);
-                if (cams != null && cams.Length > 0)
-                {
-                    disabledHmdCameras = new Camera[cams.Length];
-                    for (int i = 0; i < cams.Length; i++)
-                    {
-                        disabledHmdCameras[i] = cams[i];
-                        cams[i].enabled = false;
-                    }
-                }
 
-                var audio = hmd.GetComponentInChildren<AudioListener>(true);
-                if (audio != null)
+        Transform hmd = ResolvePlayerCameraTransform();
+        if (hmd != null)
+        {
+            var cams = hmd.GetComponentsInChildren<Camera>(true);
+            if (cams != null && cams.Length > 0)
+            {
+                disabledHmdCameras = new Camera[cams.Length];
+                for (int i = 0; i < cams.Length; i++)
                 {
-                    disabledHmdAudioListener = audio;
-                    audio.enabled = false;
+                    disabledHmdCameras[i] = cams[i];
+                    cams[i].enabled = false;
                 }
             }
+
+            var audio = hmd.GetComponentInChildren<AudioListener>(true);
+            if (audio != null)
+            {
+                disabledHmdAudioListener = audio;
+                audio.enabled = false;
+            }
         }
-        else
+        else if (Camera.main != null)
         {
-            if (Camera.main != null) Camera.main.enabled = false;
+            Camera.main.enabled = false;
         }
 
         // Then activate the desired planet camera
@@ -425,14 +396,68 @@ public class PlanetNavigator : MonoBehaviour
         DeactivatePlanetCamera();
 
         // Move the Player rig back to ship location (if available)
-        if (Player.instance != null && shipTransform != null)
+        Transform playerRig = ResolvePlayerRigTransform();
+        if (playerRig != null && shipTransform != null)
         {
-            Player.instance.transform.position = shipTransform.position;
-            Player.instance.transform.rotation = shipTransform.rotation;
+            playerRig.position = shipTransform.position;
+            playerRig.rotation = shipTransform.rotation;
         }
 
         navigationActive = false;
         currentPlanetIndex = -1;
+    }
+
+
+    private Transform ResolvePlayerCameraTransform()
+    {
+        Transform playerRig = ResolvePlayerRigTransform();
+        if (playerRig != null)
+        {
+            Camera playerCamera = playerRig.GetComponentInChildren<Camera>(true);
+            if (playerCamera != null)
+                return playerCamera.transform;
+        }
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+            return mainCamera.transform;
+
+        return null;
+    }
+
+    private Transform ResolvePlayerRigTransform()
+    {
+        if (playerRigTransform != null)
+            return playerRigTransform;
+
+        GameObject hubStation = GameObject.Find("HubStation");
+        if (hubStation != null)
+        {
+            Transform player = hubStation.transform.Find("Player");
+            if (player != null)
+            {
+                playerRigTransform = player;
+                return playerRigTransform;
+            }
+        }
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            Transform current = mainCamera.transform;
+            while (current != null)
+            {
+                if (current.name == "Player")
+                {
+                    playerRigTransform = current;
+                    return playerRigTransform;
+                }
+
+                current = current.parent;
+            }
+        }
+
+        return null;
     }
 
     // Ensure at least one AudioListener is enabled when we switch to the planet camera.
