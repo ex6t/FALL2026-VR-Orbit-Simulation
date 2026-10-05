@@ -31,10 +31,8 @@ public class XRPressableButton : XRSimpleInteractable
             movingPart = transform.GetChild(0);
     }
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         if (movingPart != null)
             startPosition = movingPart.localPosition;
     }
