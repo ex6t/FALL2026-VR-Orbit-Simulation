@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "SteamVR_Windows_EditorHelper",
-        "UnityEngine.SpatialTracking"
+        "UnityEngine.SpatialTracking",
+        "OrbitSimulation.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [
