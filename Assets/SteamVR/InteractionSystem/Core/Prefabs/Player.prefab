@@ -156,6 +156,7 @@ GameObject:
   - 4: {fileID: 429506}
   - 20: {fileID: 2014920}
   - 114: {fileID: 11450526}
+  - 114: {fileID: 11480426031}
   - 92: {fileID: 9215702}
   - 124: {fileID: 12440092}
   m_Layer: 0
@@ -963,6 +964,22 @@ MonoBehaviour:
   showDebugText: 0
   spewDebugText: 0
   showDebugInteractables: 0
+--- !u!114 &11480426031
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 125964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e4a61b31901490c9d3db21ccbe3f6d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 2014920}
+  driveHeadPose: 1
+  disableOtherCamerasOnAwake: 1
+  useFloorTrackingOrigin: 1
+  fallbackHeadHeight: 1.6
 --- !u!114 &11450526
 MonoBehaviour:
   m_ObjectHideFlags: 1
