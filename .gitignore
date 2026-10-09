@@ -70,3 +70,12 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Unity 6 Android and solution output
+/.utmp/
+*.slnx
+UpgradeLog*.htm
+
+# Local editor preferences and macOS metadata
+/.vscode/
+.DS_Store

@@ -5,6 +5,6 @@ public class PlutoTilt : MonoBehaviour
     void Start()
     {
         // Pluto Axial Tilt
-        transform.rotation = Quaternion.Euler(2.0f, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(2.0f, 0f, 0f);
     }
 }

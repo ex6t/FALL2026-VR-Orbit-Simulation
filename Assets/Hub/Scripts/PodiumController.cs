@@ -1,22 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-namespace Valve.VR.InteractionSystem.Sample
+namespace OrbitSimulation
 {
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "Valve.VR.InteractionSystem.Sample", "Assembly-CSharp", "PodiumController")]
     public class PodiumController : MonoBehaviour
     {
         public GameObject masterControl;
 
-        SimulationController simuControl;
+        private SimulationController simuControl;
 
-        AudioSource lecturer;
+        private AudioSource lecturer;
 
-        bool lectureOn = false;
-        bool[] podiums = new bool[10];
+        private bool lectureOn = false;
+        private bool[] podiums = new bool[10];
 
         public float cooldown = 0f;
 
-        float speedStorage;
+        private float speedStorage;
 
         public GameObject focusModel;
         public GameObject orbitTrail;
@@ -30,10 +30,10 @@ namespace Valve.VR.InteractionSystem.Sample
         public GameObject earthViewCam;
 
         [Header("Hub Movement")]
-        [Tooltip("Optional Reference To A HubStationMover. If Assigned, ToggleEarthView Will Move The Hub To The COnfigured Target Index")]
+        [Tooltip("Station mover used by the podium's travel button.")]
 
         public HubStationMover hubMover;
-        [Tooltip("Index Of The HubStationMover's Target To Move To When ToggleHubMover Is Called")]
+        [Tooltip("Retained Earth-view target setting from the inherited project.")]
         public int hubTargetIndexForEarth = 0;
 
         public AudioClip eccentricityVO;
@@ -45,70 +45,38 @@ namespace Valve.VR.InteractionSystem.Sample
             simuControl = masterControl.GetComponent<SimulationController>();
             lecturer = GetComponent<AudioSource>();
 
-            // Auto-Find HubStatnion if not assigned
-            if(hubMover == null)
+            if (hubMover == null)
             {
                 hubMover = FindObjectOfType<HubStationMover>();
-                if(hubMover != null)
-                    Debug.Log("[PodiumController] Auto-assigned HubStationMover." + hubMover.gameObject.name);
             }
-
         }
-
 
         public void ToggleHubMover()
         {
-            if ((cooldown < Time.time))
+            if (cooldown < Time.time)
             {
                 cooldown = Time.time + 1f;
                 if (hubMover == null)
                 {
                     hubMover = FindObjectOfType<HubStationMover>();
-                    if(hubMover == null)
+                    if (hubMover == null)
                     {
                         Debug.LogWarning("[PodiumController] No HubStationMover found in scene.");
                         return;
                     }
                 }
 
-                // Move To The Next COnfigured Hub Target Each Time The Button Is Pressed
+                // Each press moves the station to the next configured viewpoint.
                 hubMover.MoveToNext();
             }
         }
-
-
-        /* Old Earth View Function From Old Group Project That Fall2025's Group Repurposed
-  
-        public void ToggleEarthView()
-        {
-            if (cooldown < Time.time)
-            {
-                cooldown = Time.time + 1f;
-                if (lectureOn == false)
-                {
-                    earthViewCam.SetActive(true);
-                    lectureOn = true;
-                    podiums[0] = true;
-                }
-
-                else if (podiums[0] == true)
-                {
-                    earthViewCam.SetActive(false);
-                    lectureOn = false;
-                    podiums[0] = false;
-                }
-            }
-
-        }
-        */
-
 
         public void ToggleKepler1()
         {
             if (cooldown < Time.time)
             {
                 cooldown = Time.time + 1f;
-                if (lectureOn == false)
+                if (!lectureOn)
                 {
                     speedStorage = simuControl.simulationSpeed;
                     simuControl.simulationSpeed = 30f;
@@ -122,7 +90,7 @@ namespace Valve.VR.InteractionSystem.Sample
                     podiums[1] = true;
                 }
 
-                else if (podiums[1] == true)
+                else if (podiums[1])
                 {
                     simuControl.simulationSpeed = speedStorage;
                     focusModel.SetActive(false);
@@ -140,7 +108,7 @@ namespace Valve.VR.InteractionSystem.Sample
             if (cooldown < Time.time)
             {
                 cooldown = Time.time + 1f;
-                if (lectureOn == false)
+                if (!lectureOn)
                 {
                     speedStorage = simuControl.simulationSpeed;
                     simuControl.simulationSpeed = 30f;
@@ -153,7 +121,7 @@ namespace Valve.VR.InteractionSystem.Sample
                     podiums[2] = true;
                 }
 
-                else if (podiums[2] == true)
+                else if (podiums[2])
                 {
                     simuControl.simulationSpeed = speedStorage;
 
@@ -170,7 +138,7 @@ namespace Valve.VR.InteractionSystem.Sample
             if (cooldown < Time.time)
             {
                 cooldown = Time.time + 1f;
-                if (lectureOn == false)
+                if (!lectureOn)
                 {
                     speedStorage = simuControl.simulationSpeed;
                     simuControl.simulationSpeed = 30f;
@@ -183,10 +151,9 @@ namespace Valve.VR.InteractionSystem.Sample
                     podiums[3] = true;
                 }
 
-                else if (podiums[3] == true)
+                else if (podiums[3])
                 {
                     simuControl.simulationSpeed = speedStorage;
-
 
                     lecturer.Stop();
                     closeEarth.SetActive(false);

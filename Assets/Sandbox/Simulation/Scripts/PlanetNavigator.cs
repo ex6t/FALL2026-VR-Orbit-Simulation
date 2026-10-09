@@ -1,327 +1,321 @@
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR;
-using UnityEngine.EventSystems;
-
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.UI;
+using Unity.XR.CoreUtils;
+using TMPro;
 
 public class PlanetNavigator : MonoBehaviour
 {
     [Header("Planets (Transforms)")]
-    [Tooltip("Assign the planet root transforms in order (Mercury = 0, Venus = 1, ...).")]
     public List<Transform> planetTransforms;
 
-    [Header("Planet Data (ScriptableObjects, optional)")]
-    [Tooltip("Optional PlanetInfo assets for UI display (must match planetTransforms length).")]
+    [Header("Planet Data (optional)")]
     public List<PlanetInfo> planetInfos;
 
     [Header("UI (World Space Canvas)")]
-    public Canvas planetCanvas; // Screen-Space Camera or World-Space Canvas
+    public Canvas planetCanvas;
     public Text planetNameText;
     public Text planetDescriptionText;
+    public TMP_Text planetNameTextTMP;
+    public TMP_Text planetDescriptionTextTMP;
     public Button nextButton;
     public Button prevButton;
     public Button returnToShipButton;
 
     [Header("Ship / Hub")]
-    [Tooltip("Where the Player rig will be moved when returning to the ship.")]
     public Transform shipTransform;
+    public bool hideShipDuringInspection = true;
 
-    // Internal State
     private int currentPlanetIndex = -1;
     private bool navigationActive = false;
+    public bool IsNavigationActive => navigationActive;
 
-    // store references so we can restore them when exiting planet view
-    private List<Camera> planetCameras = new List<Camera>();
-    //private Camera activePlanetCamera = null;
-    private Camera[] disabledHmdCameras = null;
-    private AudioListener disabledHmdAudioListener = null;
-
-    // if we add an AudioListener to the planet camera at runtime, keep a reference so we can remove it
-    private AudioListener addedPlanetAudioListener = null;
-
-    // the currently active planet camera
-    private Camera activePlanetCamera = null;
-
-    private Transform playerRigTransform = null;
+    private readonly List<Camera> planetCameras = new List<Camera>();
+    private readonly Dictionary<Behaviour, bool> pausedMotion = new Dictionary<Behaviour, bool>();
+    private readonly Dictionary<SimulationController, float> simulationSpeeds = new Dictionary<SimulationController, float>();
+    private readonly Dictionary<XRRayInteractor, InteractionLayerMask> rayLayers = new Dictionary<XRRayInteractor, InteractionLayerMask>();
+    private XROrigin playerOrigin;
+    private Transform inspectionPlanet;
+    private Vector3 originalPlanetScale;
+    private Light inspectionLight;
+    private Transform savedParent;
+    private Vector3 savedLocalPosition;
+    private Quaternion savedLocalRotation;
+    private Vector3 savedLocalScale;
+    private Vector3 savedWorldPosition;
+    private Quaternion savedWorldRotation;
+    private bool shipWasActive;
+    private bool shipHidden;
+    private int lastNavigationFrame = -1;
 
     public void Start()
     {
-        // Log the planets list so you can verify ordering / assigned objects (lightweight)
-        if (planetTransforms == null || planetTransforms.Count == 0)
-        {
-            Debug.LogError("[PlanetNavigator] planetTransforms is empty. Assign planet root Transforms in the Inspector.");
-            return;
-        }
-
-        Debug.Log("[PlanetNavigator] Planet list (Transforms):");
-        for (int i = 0; i < planetTransforms.Count; i++)
-        {
-            var t = planetTransforms[i];
-            Debug.Log($"  planetTransforms[{i}] = {(t != null ? t.name : "NULL")}");
-        }
-
-        // collect planet cameras (one per planet) and disable them
         planetCameras.Clear();
-        for (int i = 0; i < planetTransforms.Count; i++)
+        if (planetTransforms != null)
         {
-            Transform t = planetTransforms[i];
-            Camera cam = null;
-
-            if (t != null)
+            foreach (Transform planet in planetTransforms)
             {
-                cam = t.GetComponentInChildren<Camera>(true);
-            }
-
-            if (cam != null)
-            {
-                // watcher (debug only)
-                var existingWatcher = cam.GetComponent<PlanetCameraActivationWatcher>();
-                if (existingWatcher == null)
+                Camera camera = planet != null ? planet.GetComponentInChildren<Camera>(true) : null;
+                planetCameras.Add(camera);
+                if (camera != null)
                 {
-                    cam.gameObject.AddComponent<PlanetCameraActivationWatcher>().parentName = t.name;
+                    camera.enabled = false;
+                    camera.gameObject.SetActive(false);
                 }
-
-                cam.enabled = false;
-                cam.gameObject.SetActive(false);
             }
-            else
-            {
-                Debug.LogError($"[PlanetNavigator] No Camera found as a child of planet '{(t != null ? t.name : "NULL")}'.");
-            }
-
-            planetCameras.Add(cam);
         }
 
-        Debug.Log($"[PlanetNavigator] Counts: transforms={planetTransforms.Count}, cameras={planetCameras.Count}");
-        for (int i = 0; i < planetCameras.Count; i++)
+        if (planetCanvas != null) planetCanvas.gameObject.SetActive(false);
+        if (planetDescriptionText != null && planetDescriptionTextTMP == null)
         {
-            var cam = planetCameras[i];
-            Debug.Log($"  planetCameras[{i}] = {(cam != null ? cam.name : "NULL")}");
+            planetDescriptionText.resizeTextForBestFit = true;
+            planetDescriptionText.resizeTextMinSize = 6;
+            planetDescriptionText.resizeTextMaxSize = Mathf.Max(8, planetDescriptionText.fontSize);
+            planetDescriptionText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            planetDescriptionText.verticalOverflow = VerticalWrapMode.Truncate;
+            RectTransform description = planetDescriptionText.rectTransform;
+            description.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 115f);
+            description.anchoredPosition = new Vector2(description.anchoredPosition.x, 35f);
         }
-
-        // Hide UI canvas initially
-        if (planetCanvas != null)
-        {
-            planetCanvas.gameObject.SetActive(false);
-        }
-
-        // Hook up button listeners if not already done in inspector
         if (nextButton != null) nextButton.onClick.AddListener(OnNextPlanet);
         if (prevButton != null) prevButton.onClick.AddListener(OnPrevPlanet);
         if (returnToShipButton != null) returnToShipButton.onClick.AddListener(ReturnToShip);
-
-        // Ensure previous state cleaned
-        activePlanetCamera = null;
-        disabledHmdCameras = null;
-        disabledHmdAudioListener = null;
-        currentPlanetIndex = -1;
     }
 
     void Update()
     {
-        if (navigationActive) return;
-
-        bool keyboardPressedThisFrame = Input.GetKeyDown(KeyCode.Space);
-
-        if (keyboardPressedThisFrame)
-        {
-            Debug.Log("[PlanetNavigator] Start input detected. keyboard=" + keyboardPressedThisFrame);
+        if (!navigationActive && XRInputButtons.GetKeyboardKey(KeyCode.Space, true))
             StartPlanetTask();
-        }
     }
 
     public void StartPlanetTask()
     {
-        if (!ListsValid())
+        if (navigationActive || !ListsValid()) return;
+        playerOrigin = FindObjectOfType<XROrigin>();
+        if (playerOrigin == null || playerOrigin.Camera == null)
         {
-            Debug.LogError("[PlanetNavigator] planetTransforms and planetInfos (if provided) must be assigned and planetTransforms must be non-empty.");
+            Debug.LogError("[PlanetNavigator] A tracked XR Origin camera is required for planet inspection.");
             return;
         }
 
-        currentPlanetIndex = 0;
+        Transform rig = playerOrigin.transform;
+        savedParent = rig.parent;
+        savedLocalPosition = rig.localPosition;
+        savedLocalRotation = rig.localRotation;
+        savedLocalScale = rig.localScale;
+        savedWorldPosition = rig.position;
+        savedWorldRotation = rig.rotation;
+        rig.SetParent(null, true);
+
+        TabletSummoner tablet = FindObjectOfType<TabletSummoner>();
+        if (tablet != null) tablet.CloseTablet();
+        if (hideShipDuringInspection && shipTransform != null)
+        {
+            shipWasActive = shipTransform.gameObject.activeSelf;
+            shipHidden = true;
+            shipTransform.gameObject.SetActive(false);
+        }
+
+        // Freeze orbital travel and lesson time; axial spin still reads the original speed.
+        foreach (SimulationController simulation in FindObjectsOfType<SimulationController>())
+        {
+            simulationSpeeds.Add(simulation, simulation.simulationSpeed);
+            PauseMotion(simulation);
+        }
+        foreach (Transform planet in planetTransforms)
+        {
+            if (planet == null) continue;
+            foreach (MonoBehaviour behaviour in planet.GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                string type = behaviour.GetType().Name;
+                if (type == "Orbit" || type.EndsWith("Orbit"))
+                    PauseMotion(behaviour);
+            }
+        }
+        foreach (LocomotionProvider provider in rig.GetComponentsInChildren<LocomotionProvider>(true))
+            if (!(provider is SnapTurnProviderBase)) PauseMotion(provider);
+        foreach (XRRayInteractor ray in rig.GetComponentsInChildren<XRRayInteractor>(true))
+        {
+            rayLayers.Add(ray, ray.interactionLayers);
+            ray.interactionLayers = ray.interactionLayers.value & ~(1 << 31);
+        }
+
         navigationActive = true;
-
-        if (planetCanvas != null)
-            planetCanvas.gameObject.SetActive(true);
-
+        currentPlanetIndex = 0;
         ActivatePlanetCamera(currentPlanetIndex);
-        UpdateUIForIndex(currentPlanetIndex);
+    }
+
+    private void PauseMotion(Behaviour behaviour)
+    {
+        if (pausedMotion.ContainsKey(behaviour)) return;
+        pausedMotion.Add(behaviour, behaviour.enabled);
+        behaviour.enabled = false;
     }
 
     private bool ListsValid()
     {
         if (planetTransforms == null || planetTransforms.Count == 0) return false;
-        if (planetInfos != null && planetInfos.Count > 0 && planetInfos.Count != planetTransforms.Count) return false;
-        return true;
+        foreach (Transform planet in planetTransforms)
+            if (planet == null) return false;
+        return planetInfos == null || planetInfos.Count == 0 || planetInfos.Count == planetTransforms.Count;
     }
 
     private void ActivatePlanetCamera(int index)
     {
-        if (!ListsValid())
+        if (!navigationActive || playerOrigin == null || index < 0 || index >= planetTransforms.Count) return;
+        RestorePlanetScale();
+        Transform planet = planetTransforms[index];
+        Bounds bounds = GetPlanetBounds(planet);
+        float radius = Mathf.Max(0.001f, bounds.extents.magnitude);
+        // Keep miniature planets inspectable at a comfortable physical viewing distance.
+        if (radius < 2f)
         {
-            Debug.LogError("[PlanetNavigator] ActivatePlanetCamera: lists invalid.");
-            return;
+            inspectionPlanet = planet;
+            originalPlanetScale = planet.localScale;
+            planet.localScale *= 2f / radius;
+            bounds = GetPlanetBounds(planet);
+            radius = Mathf.Max(0.001f, bounds.extents.magnitude);
         }
-        if (index < 0 || index >= planetTransforms.Count)
+        Camera marker = index < planetCameras.Count ? planetCameras[index] : null;
+        PlanetCameraController settings = marker != null ? marker.GetComponent<PlanetCameraController>() : null;
+        Vector3 direction = marker != null ? marker.transform.position - bounds.center :
+            playerOrigin.Camera.transform.position - bounds.center;
+        if (settings != null && settings.useSunDirection && settings.sun != null)
+            direction = settings.sun.position - bounds.center;
+        direction = Vector3.ProjectOnPlane(direction, Vector3.up);
+        if (direction.sqrMagnitude < 0.001f) direction = Vector3.back;
+        direction.Normalize();
+        float distance = Mathf.Max(radius + 2f, radius / Mathf.Sin(25f * Mathf.Deg2Rad));
+        float height = settings != null ? Mathf.Clamp(settings.heightOffset, 0f, distance * 0.25f) : 0f;
+        Vector3 cameraPosition = bounds.center + direction * distance + Vector3.up * height;
+
+        // Authored planet cameras remain disabled. Move the tracked rig only on a planet change.
+        playerOrigin.MatchOriginUpCameraForward(Vector3.up, -direction);
+        playerOrigin.MoveCameraToWorldLocation(cameraPosition);
+        if (inspectionLight == null)
         {
-            Debug.LogError($"[PlanetNavigator] ActivatePlanetCamera: index {index} out of range.");
-            return;
+            var lightObject = new GameObject("Planet Inspection Light");
+            lightObject.transform.SetParent(transform, false);
+            inspectionLight = lightObject.AddComponent<Light>();
+            inspectionLight.type = LightType.Spot;
+            inspectionLight.spotAngle = 80f;
+            inspectionLight.intensity = 1.5f;
+            inspectionLight.shadows = LightShadows.None;
         }
-
-        // 🔧Turn OFF all planet cameras first
-        DisableAllPlanetCameras();
-
-        Camera planetCam = planetCameras[index];
-        if (planetCam == null)
-        {
-            Debug.LogError($"[PlanetNavigator] planetCameras[{index}] is null for planet '{planetTransforms[index].name}'.");
-            return;
-        }
-
-        // Disable the active XR/player camera before switching to the planet camera.
-        disabledHmdCameras = null;
-        disabledHmdAudioListener = null;
-
-        Transform hmd = ResolvePlayerCameraTransform();
-        if (hmd != null)
-        {
-            var cams = hmd.GetComponentsInChildren<Camera>(true);
-            if (cams != null && cams.Length > 0)
-            {
-                disabledHmdCameras = new Camera[cams.Length];
-                for (int i = 0; i < cams.Length; i++)
-                {
-                    disabledHmdCameras[i] = cams[i];
-                    cams[i].enabled = false;
-                }
-            }
-
-            var audio = hmd.GetComponentInChildren<AudioListener>(true);
-            if (audio != null)
-            {
-                disabledHmdAudioListener = audio;
-                audio.enabled = false;
-            }
-        }
-        else if (Camera.main != null)
-        {
-            Camera.main.enabled = false;
-        }
-
-        // Then activate the desired planet camera
-        StartCoroutine(ActivatePlanetCameraCoroutine(planetCam));
-
-        // UI & buttons
+        // Outer planets sit beyond the original Sun light's range.
+        inspectionLight.transform.SetPositionAndRotation(cameraPosition, Quaternion.LookRotation(bounds.center - cameraPosition, Vector3.up));
+        inspectionLight.range = distance + radius * 3f;
+        inspectionLight.enabled = true;
+        PlacePlanetTablet();
         UpdateUIForIndex(index);
         if (prevButton != null) prevButton.interactable = index > 0;
         if (nextButton != null) nextButton.interactable = index < planetTransforms.Count - 1;
     }
 
-    private System.Collections.IEnumerator ActivatePlanetCameraCoroutine(Camera planetCam)
+    private Bounds GetPlanetBounds(Transform planet)
     {
-        // wait a frame so other Start/Awake logic can finish (avoids other code reparenting/enabling cameras after we act)
-        yield return null;
-
-        if (planetCam == null)
-            yield break;
-
-        Debug.Log($"[PlanetNavigator] Activating planet camera '{planetCam.name}' at path '{GetHierarchyPath(planetCam.transform)}'.");
-
-        // Activate planet camera
-        planetCam.enabled = true;
-        planetCam.gameObject.SetActive(true);
-        activePlanetCamera = planetCam;
-
-        // Ensure at least one AudioListener exists/enabled so Unity doesn't spam warnings
-        EnsureAudioListenerForActiveCamera();
-
-        // Configure the canvas to use the planet camera so UI is rendered in the camera view and hit-testable
-        if (planetCanvas != null)
+        Bounds bounds = new Bounds(planet.position, Vector3.zero);
+        bool hasBounds = false;
+        foreach (Renderer renderer in planet.GetComponentsInChildren<Renderer>(true))
         {
-            bool xrActive = false;
-            try { xrActive = UnityEngine.XR.XRSettings.isDeviceActive; } catch (Exception) { xrActive = false; }
+            if (!(renderer is MeshRenderer) && !(renderer is SkinnedMeshRenderer)) continue;
+            if (!renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
+            if (!hasBounds) { bounds = renderer.bounds; hasBounds = true; }
+            else bounds.Encapsulate(renderer.bounds);
+        }
+        return bounds;
+    }
 
-            if (xrActive)
+    private void RestorePlanetScale()
+    {
+        if (inspectionPlanet != null) inspectionPlanet.localScale = originalPlanetScale;
+        inspectionPlanet = null;
+    }
+
+    private void PlacePlanetTablet()
+    {
+        if (planetCanvas == null || playerOrigin == null) return;
+        Transform camera = playerOrigin.Camera.transform;
+        Vector3 forward = Vector3.ProjectOnPlane(camera.forward, Vector3.up).normalized;
+        if (forward.sqrMagnitude < 0.001f) forward = playerOrigin.transform.forward;
+        planetCanvas.transform.SetParent(null, true);
+        planetCanvas.renderMode = RenderMode.WorldSpace;
+        planetCanvas.worldCamera = playerOrigin.Camera;
+        planetCanvas.transform.position = camera.position + forward * 1.5f - Vector3.up * 0.1f;
+        planetCanvas.transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+        planetCanvas.transform.localScale = Vector3.one * 0.003f;
+        var raycaster = planetCanvas.GetComponent<TrackedDeviceGraphicRaycaster>();
+        if (raycaster == null) raycaster = planetCanvas.gameObject.AddComponent<TrackedDeviceGraphicRaycaster>();
+        raycaster.ignoreReversedGraphics = true;
+        planetCanvas.gameObject.SetActive(true);
+    }
+
+    // Kept for existing scene callbacks; ending inspection restores the exact ship-relative pose.
+    public void DeactivatePlanetCamera()
+    {
+        if (planetCanvas != null) planetCanvas.gameObject.SetActive(false);
+        if (inspectionLight != null) inspectionLight.enabled = false;
+        if (!navigationActive) return;
+        // Close a task overlay before restoring the inspection's locomotion state.
+        TabletSummoner tablet = FindObjectOfType<TabletSummoner>();
+        if (tablet != null) tablet.CloseTablet();
+        RestorePlanetScale();
+        navigationActive = false;
+        currentPlanetIndex = -1;
+        foreach (var entry in pausedMotion)
+            if (entry.Key != null) entry.Key.enabled = entry.Value;
+        pausedMotion.Clear();
+        foreach (var entry in simulationSpeeds)
+            if (entry.Key != null) entry.Key.simulationSpeed = entry.Value;
+        simulationSpeeds.Clear();
+        foreach (var entry in rayLayers)
+            if (entry.Key != null) entry.Key.interactionLayers = entry.Value;
+        rayLayers.Clear();
+        if (shipHidden && shipTransform != null) shipTransform.gameObject.SetActive(shipWasActive);
+        shipHidden = false;
+        if (playerOrigin != null)
+        {
+            Transform rig = playerOrigin.transform;
+            rig.SetParent(savedParent, true);
+            rig.localScale = savedLocalScale;
+            if (savedParent != null)
             {
-                planetCanvas.renderMode = RenderMode.WorldSpace;
-                var rt = planetCanvas.GetComponent<RectTransform>();
-                planetCanvas.transform.SetParent(planetCam.transform, false);
-                rt.localPosition = new Vector3(10f, 0f, 100f);
-                rt.localRotation = Quaternion.identity;
-                rt.localScale = Vector3.one * 0.25f;
-                planetCanvas.worldCamera = planetCam;
-                planetCanvas.gameObject.SetActive(true);
-                Debug.Log("[PlanetNavigator] Using WorldSpace canvas for VR (placed 10m in front of planet camera).");
-
-                try
-                {
-                    planetCam.stereoTargetEye = StereoTargetEyeMask.Both;
-                    planetCam.rect = new Rect(0f, 0f, 1f, 1f);
-                    planetCam.targetTexture = null;
-                }
-                catch (Exception) { }
+                rig.localPosition = savedLocalPosition;
+                rig.localRotation = savedLocalRotation;
             }
             else
             {
-                planetCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-                planetCanvas.worldCamera = planetCam;
-                if (planetCanvas.planeDistance < 0.01f) planetCanvas.planeDistance = 1f;
-                planetCanvas.gameObject.SetActive(true);
+                rig.SetPositionAndRotation(savedWorldPosition, savedWorldRotation);
             }
         }
-
-        yield break;
     }
 
-    public void DeactivatePlanetCamera()
+    void OnDisable()
     {
-        // Turn off ALL planet cameras
-        DisableAllPlanetCameras();
+        DeactivatePlanetCamera();
+    }
 
-        // Restore HMD cameras
-        if (disabledHmdCameras != null)
-        {
-            foreach (var cam in disabledHmdCameras)
-            {
-                if (cam != null) cam.enabled = true;
-            }
-            disabledHmdCameras = null;
-        }
-        if (disabledHmdAudioListener != null)
-        {
-            disabledHmdAudioListener.enabled = true;
-            disabledHmdAudioListener = null;
-        }
-
-        if (addedPlanetAudioListener != null)
-        {
-            Destroy(addedPlanetAudioListener);
-            addedPlanetAudioListener = null;
-            Debug.Log("[PlanetNavigator] Removed runtime-added AudioListener from planet camera.");
-        }
-
-        if (planetCanvas != null)
-        {
-            planetCanvas.gameObject.SetActive(false);
-        }
+    void OnDestroy()
+    {
+        if (nextButton != null) nextButton.onClick.RemoveListener(OnNextPlanet);
+        if (prevButton != null) prevButton.onClick.RemoveListener(OnPrevPlanet);
+        if (returnToShipButton != null) returnToShipButton.onClick.RemoveListener(ReturnToShip);
     }
 
     private void UpdateUIForIndex(int index)
     {
-        if (planetInfos != null && planetInfos.Count == planetTransforms.Count) // Double Checks For Errors
+        if (planetInfos != null && planetInfos.Count == planetTransforms.Count)
         {
-            PlanetInfo info = planetInfos[index]; // Grabs the PlanetInfo at the specified index
+            PlanetInfo info = planetInfos[index];
 
-            // PLANET NAME
-            if (planetNameText != null) // If Planet Name Exists
+            if (planetNameText != null)
                 planetNameText.text = (info != null && !string.IsNullOrEmpty(info.planetName))
                     ? info.planetName
                     : planetTransforms[index].name;
 
-            // PLANET DESCRIPTION
-            if (planetDescriptionText != null) // If Planet Description Exists
+            if (planetDescriptionText != null)
             {
                 if (info != null && !string.IsNullOrEmpty(info.description))
                 {
@@ -333,7 +327,6 @@ public class PlanetNavigator : MonoBehaviour
                     // Use Hardcoded descriptions based on planet name
                     string planetName = planetTransforms[index].name;
 
-                    // IF PLANET NAME MATCHES, SET DESCRIPTION
                     if (planetName == "Mercury")
                         planetDescriptionText.text = "-Orbit: 88 Earth Days\n-No Moons\n-No Rings\n-Second Densest Planet\n-Thinnest Atmosphere\n-Named After The Roman Messenger God";
                     else if (planetName == "Venus")
@@ -365,251 +358,43 @@ public class PlanetNavigator : MonoBehaviour
             if (planetDescriptionText != null)
                 planetDescriptionText.text = "";
         }
+        // Keep the previous semesters' Text fields and data callbacks compatible.
+        if (planetNameTextTMP != null && planetNameText != null) planetNameTextTMP.text = planetNameText.text;
+        if (planetDescriptionTextTMP != null && planetDescriptionText != null) planetDescriptionTextTMP.text = planetDescriptionText.text;
     }
-
 
     private void OnNextPlanet()
     {
-        if (!navigationActive) return;
-        if (currentPlanetIndex < planetTransforms.Count - 1)
-        {
-            currentPlanetIndex++;
-            ActivatePlanetCamera(currentPlanetIndex);
-        }
+        if (!navigationActive || currentPlanetIndex >= planetTransforms.Count - 1) return;
+        if (lastNavigationFrame == Time.frameCount) return;
+        lastNavigationFrame = Time.frameCount;
+        ActivatePlanetCamera(++currentPlanetIndex);
     }
 
     private void OnPrevPlanet()
     {
-        if (!navigationActive) return;
-        if (currentPlanetIndex > 0)
-        {
-            currentPlanetIndex--;
-            ActivatePlanetCamera(currentPlanetIndex);
-        }
+        if (!navigationActive || currentPlanetIndex <= 0) return;
+        if (lastNavigationFrame == Time.frameCount) return;
+        lastNavigationFrame = Time.frameCount;
+        ActivatePlanetCamera(--currentPlanetIndex);
     }
 
     public void ReturnToShip()
     {
         if (!navigationActive) return;
-
-        // Deactivate current planet camera and restore HMD cameras & audio
+        PlanetNavProgress.planetNavCompleted = true;
         DeactivatePlanetCamera();
-
-        // Move the Player rig back to ship location (if available)
-        Transform playerRig = ResolvePlayerRigTransform();
-        if (playerRig != null && shipTransform != null)
-        {
-            playerRig.position = shipTransform.position;
-            playerRig.rotation = shipTransform.rotation;
-        }
-
-        navigationActive = false;
-        currentPlanetIndex = -1;
+        TabletMenu menu = FindObjectOfType<TabletMenu>();
+        if (menu != null) menu.RefreshProgress();
     }
-
-
-    private Transform ResolvePlayerCameraTransform()
-    {
-        Transform playerRig = ResolvePlayerRigTransform();
-        if (playerRig != null)
-        {
-            Camera playerCamera = playerRig.GetComponentInChildren<Camera>(true);
-            if (playerCamera != null)
-                return playerCamera.transform;
-        }
-
-        Camera mainCamera = Camera.main;
-        if (mainCamera != null)
-            return mainCamera.transform;
-
-        return null;
-    }
-
-    private Transform ResolvePlayerRigTransform()
-    {
-        if (playerRigTransform != null)
-            return playerRigTransform;
-
-        GameObject hubStation = GameObject.Find("HubStation");
-        if (hubStation != null)
-        {
-            Transform player = hubStation.transform.Find("Player");
-            if (player != null)
-            {
-                playerRigTransform = player;
-                return playerRigTransform;
-            }
-        }
-
-        Camera mainCamera = Camera.main;
-        if (mainCamera != null)
-        {
-            Transform current = mainCamera.transform;
-            while (current != null)
-            {
-                if (current.name == "Player")
-                {
-                    playerRigTransform = current;
-                    return playerRigTransform;
-                }
-
-                current = current.parent;
-            }
-        }
-
-        return null;
-    }
-
-    // Ensure at least one AudioListener is enabled when we switch to the planet camera.
-    private void EnsureAudioListenerForActiveCamera()
-    {
-        if (activePlanetCamera == null)
-        {
-            Debug.LogWarning("[PlanetNavigator] EnsureAudioListenerForActiveCamera called but activePlanetCamera is null.");
-            return;
-        }
-
-        var allListeners = FindObjectsOfType<AudioListener>(true);
-        int enabledCount = 0;
-        AudioListener firstDisabled = null;
-        foreach (var l in allListeners)
-        {
-            if (l == null) continue;
-            if (l.enabled) enabledCount++;
-            else if (firstDisabled == null) firstDisabled = l;
-        }
-
-        if (enabledCount > 0)
-        {
-            Debug.Log($"[PlanetNavigator] AudioListeners present: total={allListeners.Length}, enabled={enabledCount}.");
-            return; // someone else is listening
-        }
-
-        // enable an AudioListener on the active camera if it already has one
-        var camListener = activePlanetCamera.GetComponent<AudioListener>();
-        if (camListener != null)
-        {
-            camListener.enabled = true;
-            Debug.Log($"[PlanetNavigator] Enabled existing AudioListener on planet camera '{activePlanetCamera.name}'.");
-            return;
-        }
-
-        // enable an existing disabled listener if present
-        if (firstDisabled != null)
-        {
-            firstDisabled.enabled = true;
-            Debug.Log($"[PlanetNavigator] Enabled existing disabled AudioListener on '{firstDisabled.gameObject.name}'.");
-            return;
-        }
-
-        // otherwise add one to the planet camera
-        addedPlanetAudioListener = activePlanetCamera.gameObject.AddComponent<AudioListener>();
-        addedPlanetAudioListener.enabled = true;
-        Debug.Log($"[PlanetNavigator] No AudioListener found; added AudioListener to planet camera '{activePlanetCamera.name}'.");
-    }
-
-    // A lightweight component attached to planet camera GameObjects to detect re-parenting at runtime
-    private class PlanetCameraParentWatcher : MonoBehaviour
-    {
-        private Transform lastParent = null;
-        private string initialPath = null;
-
-        public void Initialize(string currentPath)
-        {
-            lastParent = transform.parent;
-            initialPath = currentPath;
-        }
-
-        void Awake()
-        {
-            if (lastParent == null) lastParent = transform.parent;
-        }
-
-        void OnTransformParentChanged()
-        {
-            var newParent = transform.parent;
-            string oldPath = lastParent == null ? "<null>" : GetPath(lastParent);
-            string newPath = newParent == null ? "<null>" : GetPath(newParent);
-            Debug.LogError($"[PlanetNavigator][ParentWatcher] Camera '{gameObject.name}' parent changed. Old='{oldPath}' New='{newPath}'. Initial='{initialPath}'. Stack:\n{Environment.StackTrace}");
-            lastParent = newParent;
-        }
-
-        private string GetPath(Transform t)
-        {
-            if (t == null) return "<null>";
-            string path = t.name;
-            var p = t.parent;
-            while (p != null)
-            {
-                path = p.name + "/" + path;
-                p = p.parent;
-            }
-            return path;
-        }
-    }
-
-    // Watcher that logs when a camera GameObject becomes enabled/disabled so we can trace who activated it
-    private class PlanetCameraActivationWatcher : MonoBehaviour
-    {
-        // optional: store parent name for clearer logs
-        public string parentName;
-
-        void OnEnable()
-        {
-            // Keep this extremely cheap to avoid lag. Only log a simple message (no stack traces).
-            Debug.LogFormat("[PlanetNavigator][ActivationWatcher] Camera enabled: '{0}' parent='{1}'", gameObject.name, parentName ?? "(unknown)");
-        }
-
-        void OnDisable()
-        {
-            // Optional minimal log on disable
-            Debug.LogFormat("[PlanetNavigator][ActivationWatcher] Camera disabled: '{0}' parent='{1}'", gameObject.name, parentName ?? "(unknown)");
-        }
-    }
-
-    // Disable all planet cameras (used for cleanup/testing)
-    private void DisableAllPlanetCameras()
-    {
-        foreach (var cam in planetCameras)
-        {
-            if (cam == null) continue;
-            cam.enabled = false;
-            cam.gameObject.SetActive(false);
-        }
-
-        activePlanetCamera = null;
-    }
-
-
-    // Small helper to print a nice hierarchy path in logs
-    private string GetHierarchyPath(Transform t)
-    {
-        if (t == null) return "<null>";
-        string path = t.name;
-        var p = t.parent;
-        while (p != null)
-        {
-            path = p.name + "/" + path;
-            p = p.parent;
-        }
-        return path;
-    }
-
-    private float lastNavTime = -10f;
-    [SerializeField] private float navDebounceSeconds = 0.15f;
 
     public void nextPlanetFromHand()
     {
-        if (UnityEngine.Time.unscaledTime - lastNavTime < navDebounceSeconds) return;
-        lastNavTime = Time.unscaledTime;
         OnNextPlanet();
     }
+
     public void prevPlanetFromHand()
     {
-        if (UnityEngine.Time.unscaledTime - lastNavTime < navDebounceSeconds) return;
-        lastNavTime = Time.unscaledTime;
         OnPrevPlanet();
     }
-
-
 }

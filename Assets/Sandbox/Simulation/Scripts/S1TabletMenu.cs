@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class S1TabletMenu : MonoBehaviour
 {
@@ -27,9 +28,28 @@ public class S1TabletMenu : MonoBehaviour
     public int correctIndex = 2;
 
     public bool finishedGame = false; // To Prevent Multiple Confirmations
+    private readonly List<UnityAction> answerActions = new List<UnityAction>();
+
+    private void Awake()
+    {
+        finishedGame = false;
+        currentIndex = 0;
+        if (gameCanvas != null) gameCanvas.SetActive(true);
+        if (correctCanvas != null) correctCanvas.SetActive(false);
+        if (incorrectCanvas != null) incorrectCanvas.SetActive(false);
+    }
 
     private void Start()
     {
+        for (int i = 0; i < options.Count; i++)
+        {
+            int index = i;
+            UnityAction action = () => SelectAnswer(index);
+            answerActions.Add(action);
+            if (options[i] == null) continue;
+            options[i].navigation = new Navigation { mode = Navigation.Mode.None };
+            if (options[i] is Button button) button.onClick.AddListener(action);
+        }
         // Makes sure index is valid
         if (options.Count > 0)
         {
@@ -50,7 +70,7 @@ public class S1TabletMenu : MonoBehaviour
     // FUNCTION FOR MOVING DOWN THE MENU
     public void MoveDown()
     {
-        if (options.Count == 0) return;
+        if (finishedGame || options.Count == 0) return;
 
         currentIndex++;
         if (currentIndex >= options.Count)
@@ -63,7 +83,7 @@ public class S1TabletMenu : MonoBehaviour
     // FUNCTION FOR MOVING UP THE MENU
     public void MoveUp()
     {
-        if (options.Count == 0) return;
+        if (finishedGame || options.Count == 0) return;
 
         currentIndex--;
         if (currentIndex < 0)
@@ -84,12 +104,23 @@ public class S1TabletMenu : MonoBehaviour
     // FUNCTION FOR CONFIRMING THE CURRENT SELECTION
     public void ConfirmCurrent()
     {
+        if (finishedGame) return;
         var option = GetCurrentOption();
-        if (option == null)
+        if (option == null || !option.IsActive() || !option.IsInteractable())
         {
             Debug.LogWarning("[S1TabletMenu] ConfirmCurrent called but no current option.");
             return;
         }
+
+        if (option is Button button) button.onClick.Invoke();
+        else SelectAnswer(currentIndex);
+    }
+
+    private void SelectAnswer(int index)
+    {
+        if (finishedGame || index < 0 || index >= options.Count) return;
+        currentIndex = index;
+        finishedGame = true;
 
         //  Checks If The Selected Option Is Correct
         bool isCorrect = (currentIndex == correctIndex);
@@ -127,11 +158,6 @@ public class S1TabletMenu : MonoBehaviour
             }
         }
 
-        // Still trigger button functionality if needed
-        if (option.TryGetComponent<Button>(out Button btn))
-        {
-            btn.onClick.Invoke();
-        }
     }
 
     // FUNCTION FOR HOVERING THE CURRENT OPTION FOR UI FOCUS
@@ -140,7 +166,7 @@ public class S1TabletMenu : MonoBehaviour
         var option = GetCurrentOption();
         if (option != null)
         {
-            EventSystem.current.SetSelectedGameObject(option.gameObject);
+            if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(option.gameObject);
             Debug.Log("[S1TabletMenu] Hovering: " + option.name);
         }
     }
@@ -154,5 +180,11 @@ public class S1TabletMenu : MonoBehaviour
             bool shouldBeActive = (i == currentIndex);
             highlightBoxes[i].SetActive(shouldBeActive);
         }
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < answerActions.Count; i++)
+            if (options[i] is Button button) button.onClick.RemoveListener(answerActions[i]);
     }
 }

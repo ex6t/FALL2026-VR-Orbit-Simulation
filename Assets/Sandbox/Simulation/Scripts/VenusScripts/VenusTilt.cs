@@ -9,7 +9,7 @@ public class VenusTilt : MonoBehaviour
     {
 
             // Venus Axial Tilt
-            transform.rotation = Quaternion.Euler(177.3f, 0f, 0f);
+            transform.localRotation = Quaternion.Euler(177.3f, 0f, 0f);
 
     }
 }

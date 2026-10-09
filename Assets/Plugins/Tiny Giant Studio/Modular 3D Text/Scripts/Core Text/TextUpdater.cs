@@ -22,7 +22,10 @@ namespace TinyGiantStudio.Text
         private Modular3DText Text => GetComponent<Modular3DText>();
 
 #if UNITY_EDITOR
+        // Keep the legacy serialized field so existing scene and prefab data retains its schema.
+        // Unity 6.5 ownership is tracked with the full EntityId instead of this old int.
         [SerializeField, HideInInspector] private int GUIID;
+        [SerializeField, HideInInspector] private EntityId gameObjectEntityId;
 #endif
 
         /// <summary>
@@ -54,14 +57,15 @@ namespace TinyGiantStudio.Text
 
             #region Duplication Shared mesh Fix
 
-            if (GUIID == 0)
+            EntityId currentEntityId = gameObject.GetEntityId();
+            if (gameObjectEntityId == EntityId.None)
             {
-                GUIID = gameObject.GetInstanceID();
+                gameObjectEntityId = currentEntityId;
                 EditorUtility.SetDirty(this);
             }
-            else if (GUIID != gameObject.GetInstanceID())
+            else if (gameObjectEntityId != currentEntityId)
             {
-                GameObject old = EditorUtility.InstanceIDToObject(GUIID) as GameObject;
+                GameObject old = EditorUtility.EntityIdToObject(gameObjectEntityId) as GameObject;
                 if (old != null)
                 {
                     MeshFilter original = old.GetComponent<MeshFilter>();
@@ -88,7 +92,7 @@ namespace TinyGiantStudio.Text
                     }
                 }
 
-                GUIID = gameObject.GetInstanceID();
+                gameObjectEntityId = currentEntityId;
                 EditorUtility.SetDirty(this);
             }
 

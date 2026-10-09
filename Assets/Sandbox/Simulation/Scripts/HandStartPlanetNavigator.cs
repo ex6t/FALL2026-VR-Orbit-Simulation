@@ -1,17 +1,20 @@
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class HandStartPlanetNavigator : MonoBehaviour
 {
+    private static HandStartPlanetNavigator inputOwner;
     [Header("Task Checkmarks")]
     public GameObject planetTaskCheckmark;
 
     [SerializeField] private PlanetNavigator planetNavigator;
     [SerializeField] private TabletSummoner tabletSummoner;
     [SerializeField] private TabletMenu tabletMenu;
+    [SerializeField] private XRRayInteractor leftRay;
+    [SerializeField] private XRRayInteractor rightRay;
 
-    bool planetTaskStarted = false;
     private bool previousTabletToggle;
     private bool previousCloseTablet;
     private bool previousConfirm;
@@ -19,6 +22,26 @@ public class HandStartPlanetNavigator : MonoBehaviour
     private bool previousMoveDown;
     private bool previousNextPlanet;
     private bool previousPreviousPlanet;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetInputOwner()
+    {
+        inputOwner = null;
+    }
+
+    void OnEnable()
+    {
+        if (tabletSummoner == null) return;
+        // Older scenes attached this two-hand input handler to both gloves.
+        if (inputOwner != null && inputOwner != this && inputOwner.tabletSummoner == tabletSummoner)
+            enabled = false;
+        else inputOwner = this;
+    }
+
+    void OnDisable()
+    {
+        if (inputOwner == this) inputOwner = null;
+    }
 
     void Reset()
     {
@@ -40,16 +63,12 @@ public class HandStartPlanetNavigator : MonoBehaviour
 
         if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.SecondaryButton, KeyCode.Escape, ref previousCloseTablet))
         {
-            if (planetTaskStarted && planetNavigator != null)
+            if (planetNavigator != null && planetNavigator.IsNavigationActive)
             {
-                if (planetTaskCheckmark != null)
-                    planetTaskCheckmark.SetActive(true);
-
-                PlanetNavProgress.planetNavCompleted = true;
                 planetNavigator.ReturnToShip();
-                planetTaskStarted = false;
+                if (tabletSummoner != null) tabletSummoner.CloseTablet();
             }
-            else if (tabletSummoner != null)
+            else if (tabletSummoner != null && tabletSummoner.IsTabletOpen)
             {
                 tabletSummoner.CloseTablet();
             }
@@ -57,22 +76,22 @@ public class HandStartPlanetNavigator : MonoBehaviour
 
         if (tabletSummoner != null && tabletSummoner.IsTabletOpen && tabletMenu != null)
         {
-            if (XRInputButtons.GetButtonDown(XRNode.LeftHand, XRMenuButton.TriggerButton, KeyCode.UpArrow, ref previousMoveUp))
+            // A trigger used to select the task must not also skip the first planet.
+            XRInputButtons.GetTriggerDown(XRNode.RightHand, KeyCode.RightArrow, ref previousNextPlanet);
+            XRInputButtons.GetTriggerDown(XRNode.LeftHand, KeyCode.LeftArrow, ref previousPreviousPlanet);
+            if (XRInputButtons.GetVerticalDown(XRNode.LeftHand, true, KeyCode.UpArrow, ref previousMoveUp))
             {
                 tabletMenu.MoveUp();
             }
 
-            if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.TriggerButton, KeyCode.DownArrow, ref previousMoveDown))
+            if (XRInputButtons.GetVerticalDown(XRNode.LeftHand, false, KeyCode.DownArrow, ref previousMoveDown))
             {
                 tabletMenu.MoveDown();
             }
 
             if (XRInputButtons.GetButtonDown(XRNode.LeftHand, XRMenuButton.PrimaryButton, KeyCode.Return, ref previousConfirm))
             {
-                Selectable current = tabletMenu.GetCurrentOption();
                 tabletMenu.ConfirmCurrent();
-                if (current != null && current.gameObject.name == "ViewEachPlanetBtn")
-                    planetTaskStarted = true;
             }
 
             return;
@@ -81,14 +100,21 @@ public class HandStartPlanetNavigator : MonoBehaviour
         if (planetNavigator == null)
             return;
 
-        if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.TriggerButton, KeyCode.RightArrow, ref previousNextPlanet))
+        if (XRInputButtons.GetTriggerDown(XRNode.RightHand, KeyCode.RightArrow, ref previousNextPlanet) && !PointingAtButton(rightRay))
         {
             planetNavigator.nextPlanetFromHand();
         }
 
-        if (XRInputButtons.GetButtonDown(XRNode.LeftHand, XRMenuButton.TriggerButton, KeyCode.LeftArrow, ref previousPreviousPlanet))
+        if (XRInputButtons.GetTriggerDown(XRNode.LeftHand, KeyCode.LeftArrow, ref previousPreviousPlanet) && !PointingAtButton(leftRay))
         {
             planetNavigator.prevPlanetFromHand();
         }
+    }
+
+    private bool PointingAtButton(XRRayInteractor ray)
+    {
+        // UI clicks fire on release. Let that path own the press instead of also advancing on squeeze.
+        return ray != null && ray.TryGetCurrentUIRaycastResult(out var hit) &&
+            hit.gameObject != null && hit.gameObject.GetComponentInParent<Button>() != null;
     }
 }

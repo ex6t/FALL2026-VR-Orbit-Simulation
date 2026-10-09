@@ -45,12 +45,13 @@ public class OverlayFeed : MonoBehaviour
 
     void Start()
     {
-        simuControl = masterControl.GetComponent<SimulationController>();
+        if (masterControl != null) simuControl = masterControl.GetComponent<SimulationController>();
     }
 
     void Update()
     {
-        timeDisplay.text = "<b>Current Date: " + simuControl.dateRead() + "</b>";
+        if (simuControl == null) return;
+        if (timeDisplay != null) timeDisplay.text = "<b>Current Date: " + simuControl.dateRead() + "</b>";
 
         if (year != simuControl.getYear())
         {
@@ -83,7 +84,7 @@ public class OverlayFeed : MonoBehaviour
 
             textToDisplay += "\n    True solar longitude: " + (true_anomaly + longitudePerihelion) % 360;
 
-            overlay.text = textToDisplay;
+            if (overlay != null) overlay.text = textToDisplay;
         }
 
        

@@ -8,6 +8,7 @@ using UnityEditor;
 
 using TinyGiantStudio.Layout;
 using TinyGiantStudio.Text.FontCreation;
+using System.Collections.Generic;
 
 namespace TinyGiantStudio.Text
 {
@@ -19,6 +20,26 @@ namespace TinyGiantStudio.Text
     public class GetCharacterObject
     {
         private static readonly float unitConverted = 0.1f; //an arbitrary value
+
+        // The precompiled CharacterGenerator still takes an int cache key. Allocate opaque
+        // keys per domain instead of truncating or hashing Unity's full EntityId.
+        private static readonly Dictionary<EntityId, int> fontCacheIds = new Dictionary<EntityId, int>();
+        private static int lastFontCacheId;
+
+        private static int GetFontCacheId(Font font)
+        {
+            EntityId entityId = font.GetEntityId();
+            if (fontCacheIds.TryGetValue(entityId, out int cacheId))
+                return cacheId;
+
+            // Never wrap or reuse a key while the vendor generator's cache is alive.
+            if (lastFontCacheId == int.MaxValue)
+                throw new System.InvalidOperationException("The font cache has exhausted its integer keys.");
+
+            cacheId = ++lastFontCacheId;
+            fontCacheIds.Add(entityId, cacheId);
+            return cacheId;
+        }
 
         #region Public methods
 
@@ -174,7 +195,7 @@ namespace TinyGiantStudio.Text
             {
                 CharacterGenerator creator = new CharacterGenerator();
 
-                var mesh = creator.GetMesh(text.Font.GetInstanceID(), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, c);
+                var mesh = creator.GetMesh(GetFontCacheId(text.Font), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, c);
                 mesh = MeshPostProcessing.PostProcess(mesh, meshPostProcess);
                 meshLayout.mesh = mesh;
                 text.generatedMeshes.Add(mesh);
@@ -245,7 +266,7 @@ namespace TinyGiantStudio.Text
             {
                 CharacterGenerator creator = new CharacterGenerator();
 
-                var mesh = creator.GetMesh(text.Font.GetInstanceID(), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, currentChar);
+                var mesh = creator.GetMesh(GetFontCacheId(text.Font), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, currentChar);
                 mesh = MeshPostProcessing.PostProcess(mesh, meshPostProcess);
                 meshLayout.mesh = mesh;
                 text.generatedMeshes.Add(mesh);
@@ -323,7 +344,7 @@ namespace TinyGiantStudio.Text
             else
             {
                 CharacterGenerator creator = new CharacterGenerator();
-                Mesh mesh = creator.GetMesh(text.Font.GetInstanceID(), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, c);
+                Mesh mesh = creator.GetMesh(GetFontCacheId(text.Font), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, c);
                 mesh = MeshPostProcessing.PostProcess(mesh, meshPostProcess);
                 obj.GetComponent<MeshFilter>().sharedMesh = mesh;
                 text.generatedMeshes.Add(mesh);
@@ -396,7 +417,7 @@ namespace TinyGiantStudio.Text
             else
             {
                 CharacterGenerator creator = new CharacterGenerator();
-                Mesh mesh = creator.GetMesh(text.Font.GetInstanceID(), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, currentChar);
+                Mesh mesh = creator.GetMesh(GetFontCacheId(text.Font), text.Font.TypeFace, text.Font.sizeXYInput, text.Font.sizeZInput, text.Font.autoSmoothAngleInput, text.Font.averageYValue, currentChar);
 
                 mesh = MeshPostProcessing.PostProcess(mesh, meshPostProcess);
                 obj.GetComponent<MeshFilter>().sharedMesh = mesh;

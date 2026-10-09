@@ -1,4 +1,3 @@
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -8,6 +7,7 @@ public class XRPressableButton : XRSimpleInteractable
 {
     [Header("Button Events")]
     public UnityEvent onPressed;
+    public UnityEvent onReleased;
 
     [Header("Motion")]
     public Transform movingPart;
@@ -17,7 +17,6 @@ public class XRPressableButton : XRSimpleInteractable
     [Header("Input")]
     public float cooldown = 0.35f;
     public bool allowTriggerPress = true;
-    public bool invokeLegacySteamVREvents = true;
 
     private Vector3 startPosition;
     private float lastPressedTime = -999f;
@@ -43,6 +42,12 @@ public class XRPressableButton : XRSimpleInteractable
         Press();
     }
 
+    protected override void OnSelectExited(SelectExitEventArgs args)
+    {
+        base.OnSelectExited(args);
+        onReleased?.Invoke();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!allowTriggerPress || !IsLikelyInteractor(other))
@@ -65,7 +70,7 @@ public class XRPressableButton : XRSimpleInteractable
         if (movingPart == null)
             return;
 
-        Vector3 targetPosition = triggerPressCount > 0 ? startPosition + localPressOffset : startPosition;
+        Vector3 targetPosition = triggerPressCount > 0 || isSelected ? startPosition + localPressOffset : startPosition;
         movingPart.localPosition = Vector3.Lerp(movingPart.localPosition, targetPosition, Time.deltaTime * pressReturnSpeed);
     }
 
@@ -80,36 +85,6 @@ public class XRPressableButton : XRSimpleInteractable
             movingPart.localPosition = startPosition + localPressOffset;
 
         onPressed?.Invoke();
-
-        if (invokeLegacySteamVREvents)
-            InvokeLegacySteamVRButtonEvents();
-    }
-
-    private void InvokeLegacySteamVRButtonEvents()
-    {
-        Component legacyButton = GetComponent("Valve.VR.InteractionSystem.HoverButton");
-        if (legacyButton == null)
-            return;
-
-        InvokeLegacyHandEvent(legacyButton, "onButtonDown");
-        InvokeLegacyHandEvent(legacyButton, "onButtonIsPressed");
-    }
-
-    private void InvokeLegacyHandEvent(Component legacyButton, string fieldName)
-    {
-        FieldInfo eventField = legacyButton.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public);
-        if (eventField == null)
-            return;
-
-        object handEvent = eventField.GetValue(legacyButton);
-        if (handEvent == null)
-            return;
-
-        MethodInfo invokeMethod = handEvent.GetType().GetMethod("Invoke");
-        if (invokeMethod == null)
-            return;
-
-        invokeMethod.Invoke(handEvent, new object[] { null });
     }
 
     private bool IsLikelyInteractor(Collider other)
@@ -117,19 +92,6 @@ public class XRPressableButton : XRSimpleInteractable
         if (other == null)
             return false;
 
-        if (other.GetComponentInParent<XRBaseInteractor>() != null)
-            return true;
-
-        Transform current = other.transform;
-        while (current != null)
-        {
-            string objectName = current.name.ToLowerInvariant();
-            if (objectName.Contains("hand") || objectName.Contains("controller") || objectName.Contains("interactor"))
-                return true;
-
-            current = current.parent;
-        }
-
-        return false;
+        return other.GetComponentInParent<XRBaseInteractor>() != null;
     }
 }

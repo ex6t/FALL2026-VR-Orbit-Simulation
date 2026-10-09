@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.XR.CoreUtils;
 
 public class PlayerOnEarthFollower : MonoBehaviour
 {
@@ -24,9 +25,11 @@ public class PlayerOnEarthFollower : MonoBehaviour
     public bool matchEarthRotation = true;
 
     private bool following = false;
+    private XROrigin playerOrigin;
 
     private void Start()
     {
+        playerOrigin = GetComponent<XROrigin>();
         if (earth == null)
         {
             Debug.LogError("PlayerOnEarthFollower: Earth reference is not assigned.");
@@ -63,10 +66,11 @@ public class PlayerOnEarthFollower : MonoBehaviour
     private void SnapToEarth()
     {
         // "Top" of Earth is along earth.up
-        Vector3 surfacePos = earth.position + earth.up * (earthRadius + heightOffset);
+        Vector3 surfacePos = earth.position + (playerOrigin != null ? Vector3.up : earth.up) * (earthRadius + heightOffset);
         transform.position = surfacePos;
 
-        if (matchEarthRotation)
+        // Earth may spin underneath the viewer; never rotate a tracked rig or undo snap turns.
+        if (matchEarthRotation && playerOrigin == null)
         {
             transform.rotation = earth.rotation;
         }

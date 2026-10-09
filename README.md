@@ -1,141 +1,90 @@
 # VR Orbit Simulation
 
-An educational VR demo focusing on Earth’s orbit, the Red Sun, the eight planets (and Pluto) that are in our solar system, and Kepler’s Laws of Planetary Motion. Developed in Unity (C#) for the CS490 Capstone Project, this simulation provides an immersive way for students to explore orbital mechanics and the solar system.
+A Unity VR project about Earth's orbit, the solar system, seasons, habitable zones,
+and Kepler's laws. This repository continues the Fall 2025 capstone project.
 
-In Fall 2025, our group expanded the original project by adding a 2D Task Tablet system, new interactive minigames, and additional educational experiences.
+## Setup
 
----
+1. Install **Unity 6000.5.10f1** through Unity Hub. For Quest builds, include
+   Android Build Support, Android SDK/NDK Tools, and OpenJDK.
+2. Clone this repository and add its root folder to Unity Hub. The correct folder
+   contains `Assets`, `Packages`, and `ProjectSettings`.
+3. Let Unity finish importing. If prompted, import **TMP Essentials**.
+   TMP Examples & Extras are optional and are not needed here.
+4. Open `Assets/Scenes/OrbitalModel.unity`.
 
-## 🚀 Main Features
+The project uses the Built-in Render Pipeline, OpenXR 1.17.1, and the Input System.
+XR Interaction Toolkit 2.6.4 is embedded in
+`Packages/com.unity.xr.interaction.toolkit` with Unity 6.5 editor compatibility
+changes. Keep this directory in source control. The inherited rig still uses
+XRI 2 locomotion; changing to XRI 3 requires a separate rig migration.
 
-* **Interactive Solar System:** Explore Earth’s orbit and view close‑ups of each planet.
-* **2D Task Tablet (A Button):** Pull up a floating VR tablet with multiple learning options:
+## Controls
 
-  * **Planet Close‑Ups:** Select a planet to view it up close in 3D.
-  * **Red Sun Minigame:** Experience stylized solar visuals through a small interactive activity.
-  * **Seasons Simulation:** Stand on Earth as it rotates and watch seasons change in real time.
-* **Immersive Learning:** Concepts are presented visually to help students understand how orbits and tilt shape seasonal cycles.
-* **Smooth VR Support:** Compatible with Oculus, SteamVR, and OpenXR.
+| Action | Quest controller |
+| --- | --- |
+| Open task tablet | A |
+| Close tablet or return from planet inspection | B |
+| Select tablet row | Ray + trigger, or X |
+| Move between tablet rows | Left thumbstick up/down |
+| Next / previous planet | Right / left trigger |
+| Snap turn | Right thumbstick left/right |
+| Continue Red Sun or Seasons | A |
+| Teleport on the floor | Point and release trigger |
 
----
+The original learning activities remain available. The guided learning redesign
+is the next development phase; it has not replaced the inherited lesson flow yet.
 
-## 🎮 Keybinds
+## Project folders
 
-| Action                       | Control                       |
-| ---------------------------- | ----------------------------- |
-| Open Tablet                  | **A**                         |
-| Close Tablet                 | **B**                         |
-| Confirm Option               | **X**                         |
-| Unused                       | **Y**                         |
-| Move Up/Down in Tablet       | **Right Trigger**             |
-| Movement (Tablet Navigation) | **Left Trigger (Hold North)** |
+| Folder | Contents |
+| --- | --- |
+| `Assets/Scenes` | Seven inherited learning scenes and Seasons assets |
+| `Assets/Global` | Simulation clock, audio, and space backgrounds |
+| `Assets/Hub` | Podiums, buttons, speed control, and room navigation |
+| `Assets/Sandbox/Simulation` | Planet models, orbital calculations, tablets, and lessons |
+| `Assets/XR` and `Assets/XRI` | Rig, controller art, and XR settings |
+| `Assets/Samples` | Retained XRI input, controller, and teleport support |
+| `Assets/FutureAssets` | Science-fiction props; some are already referenced by scenes |
+| `Assets/Plugins` | Required vendor tools, planet art, and reusable assets |
+| `SourceArt/Earth` | Editable Blender source, kept outside Unity imports |
 
----
+The existing FBX and its metadata provide the Earth/coordinate model used by
+Unity. Blender is not required to import or run the project.
 
-## 🛠️ Tech Stack
+## Building
 
-* **Language:** C#
-* **Engine:** Unity (2022.3 LTS)
-* **Physics:** Unity Rigidbody
-* **VR Support:** Oculus / SteamVR / OpenXR
+Quest 3 standalone is the first target. In **File > Build Profiles**, select
+Android and use the existing IL2CPP / ARM64 settings. Keep the enabled scenes in
+this order: `OrbitalModel`, `HabitableZone1`, `S1View`, `S2View`, `S3View`, `Seasons`.
+`EarthView` is retained for future integration and is not enabled in the build.
+Save builds outside the repository. Windows PC VR is a separate later build.
 
----
+## Working on the code
 
-## ▶️ Download & Setup Guide
+Keep scripts small and direct: normal MonoBehaviour methods, clear field names,
+and brief comments where the behavior needs explaining. Keep existing Inspector
+field names, script metadata, and button callback names when editing a component.
+Changes to research calculations, units, epochs, and model positioning need their
+own review; do not mix them into UI or XR cleanup.
 
-### 1. Unity Installation
+The current visual orbits and Red Sun presentation include inherited
+approximations. Scientific calculation wiring and content review remain part of
+future development. Physical headset input, comfort, performance, sliders, and
+Android pause/resume still require a Quest acceptance pass.
 
-1. Install **Unity Hub** and sign in.
-2. Add **Unity 2022.3 LTS** under *Installs*.
-3. Make sure to include:
+## Credits and research
 
-   * Android Build Support
-   * Windows Build Support
-   * Visual Studio Community 2022
-4. After installation, create a test 3D project to verify setup.
+Original project: [KellyLFrear/FALL2025-VR-Orbit-Simulation](https://github.com/KellyLFrear/FALL2025-VR-Orbit-Simulation).
+Fall 2025 contributors: Kelly Frear, Gavin Rosander, Arpita Godbole, and Daniel
+Pangilian. The project also builds on earlier capstone work by williamphong.
 
-### 2. Steam & SteamVR Installation
+Dr. Kostadinov's research and MATLAB model were translated into the retained C#
+orbital calculations. Keep the research attribution with future model work:
 
-1. Install **Steam**.
-2. Search for and install **SteamVR**.
-3. Launch SteamVR to confirm your VR headset is detected.
-4. Keep SteamVR running before launching Unity VR scenes.
+- [Kostadinov and Gilb, Earth Orbit model](https://gmd.copernicus.org/articles/7/1051/2014/)
+- [Earth Orbit source archive](https://zenodo.org/records/4346609)
 
-### 3. Meta Quest 3 Setup
-
-1. Install **Meta Quest Developer Hub**.
-2. Enable Developer Mode through the **Meta mobile app**.
-3. Connect the headset with a USB‑C cable.
-
-### 4. Visual Studio Installation
-
-1. Install **Visual Studio 2022 Community Edition**.
-2. Open it once to finalize installation.
-
-### 5. Git & Repository Setup
-
-1. Install Git or GitHub Desktop.
-2. Clone the repository:
-
-   ```bash
-   git clone https://github.com/KellyLFrear/FALL2025-VR-Orbit-Simulation.git
-   ```
-3. Open the folder in Unity Hub via **Add Project → Select Folder**.
-
-### 6. Unity XR Configuration
-
-1. Go to **Edit → Project Settings → XR Plug‑in Management**.
-2. Enable **OpenXR** under both Windows and Android.
-3. Under **OpenXR Features**, enable:
-
-   * Oculus Touch
-   * Hand Tracking
-4. In **Package Manager**, install:
-
-   * XR Interaction Toolkit
-   * Input System
-   * TextMesh Pro
-   * Universal Render Pipeline
-   * Oculus XR Plugin
-
----
-
-## 📘 Educational Concepts
-
-* Kepler’s Laws of Planetary Motion
-* Earth’s orbital path
-* Axial tilt and seasonal shift
-* Planetary scaling & spatial awareness
-* Solar radiation (Red Sun experience)
-
----
-
-## 📈 Ideas for Future Groups
-
-* Build a tutorial or intro scene for first‑time VR users.
-* Upgrade to Unity 2026 or the newest available version.
-* Create a tidal‑wave minigame showing lunar gravitational influence.
-* Create a solar‑wave minigame focusing on sun‑based radiation/wave patterns.
-* For seasons, add a ground‑level seasons perspective where players watch the sun move throughout the year.
-* Turn the coordinates on the Earth off/on
-
----
-
-## 🪐 Acknowledgements
-**This project was created in collaboration with Dr. Kostadinov, whose MATLAB code and research were translated into C# for use in this simulation! We also appreciate the help and feedback he's provided for us in order to make this project.**
-* Earth Orbit Research Paper: https://gmd.copernicus.org/articles/7/1051/2014/
-* Earth Orbit Model Source Code: https://zenodo.org/records/4346609
-
-**We Also Appreciate The Help Of:**
-* CS490 faculty & advisors
-* Unity XR documentation
-* NASA data resources
-* First Verion Of The Capstone Project Was Created By @williamphong
-
-**This Project Was Developed By:**
-* Kelly Frear @kellylfrear
-* Gavin Rosander @rosanderg913
-* Arpita Godbole @arpitag2025
-* Daniel Pangilian @dpg2003
-
----
+Third-party asset ownership remains with its authors. See
+[third-party notices](THIRD_PARTY_NOTICES.md) and the licenses included with vendor
+packages.

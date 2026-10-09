@@ -1,21 +1,32 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.XR.CoreUtils;
 
 public class HubStationSceneController : MonoBehaviour
 {
     private GameObject hub;
     private bool wasActive = false;
+    private XROrigin player;
+    private Transform playerParent;
+    private Scene lessonScene;
 
     void Start()
     {
-        // Look for the HubStation in DontDestroyOnLoad
+        lessonScene = gameObject.scene;
+        // Hide the station only for this lesson, preserving any player nested inside it.
         hub = GameObject.Find("HubStation");
 
         if (hub != null)
         {
             wasActive = hub.activeSelf;
+            player = hub.GetComponentInChildren<XROrigin>();
+            if (player != null)
+            {
+                playerParent = player.transform.parent;
+                player.transform.SetParent(hub.transform.parent, true);
+            }
             hub.SetActive(false);
-            Debug.Log("[S1View] HubStation detected and DISABLED.");
+            Debug.Log("[" + lessonScene.name + "] HubStation detected and DISABLED.");
         }
 
         // Listen for scene changes
@@ -24,11 +35,13 @@ public class HubStationSceneController : MonoBehaviour
 
     private void OnSceneChanged(Scene oldScene, Scene newScene)
     {
-        // If we leave S1View and HubStation exists → re-enable it
-        if (hub != null && wasActive && newScene.name != "S1View")
+        // Restore a surviving station when leaving the lesson that hid it.
+        if (hub != null && wasActive && oldScene == lessonScene && newScene != lessonScene)
         {
             hub.SetActive(true);
-            Debug.Log("[S1View] HubStation RE-ENABLED (left S1View).");
+            if (player != null && playerParent != null)
+                player.transform.SetParent(playerParent, true);
+            Debug.Log("[" + lessonScene.name + "] HubStation RE-ENABLED (left lesson).");
 
             // Stop listening — avoids multiple calls
             SceneManager.activeSceneChanged -= OnSceneChanged;

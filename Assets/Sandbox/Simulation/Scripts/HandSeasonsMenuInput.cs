@@ -10,7 +10,7 @@ public class HandSeasonsMenuInput : MonoBehaviour
 
     // How Many Times Continue Has Been Pressed
     private int aPressCount = 0;
-    private bool previousContinue;
+    private bool previousContinue = true;
 
     private void Start()
     {
@@ -20,34 +20,34 @@ public class HandSeasonsMenuInput : MonoBehaviour
 
         // Start With Tablet1 Active, Tablet2 Inactive
         if (tablet1 != null)
-            tablet1.SetActive(true); // Sets Tablet1 On
+            tablet1.SetActive(true);
 
         if (tablet2 != null)
-            tablet2.SetActive(false); // Sets Tablet2 Off
+            tablet2.SetActive(false);
     }
 
     private void Update()
     {
-        if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.SecondaryButton, KeyCode.Return, ref previousContinue))
+        if (XRInputButtons.GetButtonDown(XRNode.RightHand, XRMenuButton.PrimaryButton, KeyCode.Return, ref previousContinue))
         {
-            aPressCount++; // Increment Continue Press Count
+            aPressCount++;
 
             switch (aPressCount)
             {
                 // First Time Pressing Continue: Switch To Tablet2
                 case 1:
-                    if (tablet1 != null) tablet1.SetActive(false); // Sets Tablet1 Off
-                    if (tablet2 != null) tablet2.SetActive(true); // Sets Tablet2 On
+                    if (tablet1 != null) tablet1.SetActive(false);
+                    if (tablet2 != null) tablet2.SetActive(true);
                     break;
 
                 // Second Time Pressing Continue: Load Next Scene
                 case 2:
-                    SeasonsProgress.seasonsCompleted = true; // Marks Seasons Task As Completed
-                    SceneManager.LoadScene("OrbitalModel"); // Swaps To The Main Scene
+                    SeasonsProgress.seasonsCompleted = true;
+                    SceneManager.LoadScene("OrbitalModel");
                     break;
 
                 default:
-                    Debug.Log("Didn't Swap Scenes Properly, Counted An Extra Press!"); // Error Message
+                    Debug.Log("Didn't Swap Scenes Properly, Counted An Extra Press!");
                     break;
             }
         }

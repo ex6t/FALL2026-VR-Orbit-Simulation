@@ -8,6 +8,6 @@ public class UranusTilt : MonoBehaviour
     void Start()
     {
         // Uranus' axial tilt
-        transform.rotation = Quaternion.Euler(98f, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(98f, 0f, 0f);
     }
 }

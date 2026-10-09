@@ -8,6 +8,6 @@ public class NeptuneTilt : MonoBehaviour
     void Start()
     {
             // Neptune's axial tilt
-            transform.rotation = Quaternion.Euler(28.3f, 0f, 0f);
+            transform.localRotation = Quaternion.Euler(28.3f, 0f, 0f);
     }
 }

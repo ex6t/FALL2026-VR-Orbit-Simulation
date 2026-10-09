@@ -12,40 +12,41 @@ public class TabletMenu : MonoBehaviour
     public List<GameObject> highlightBoxes = new List<GameObject>();
 
     [Header("Checkmarks")]
-    public GameObject planetNavCheckmark; // Checkmark For Planetary Navigation Completion
-    public GameObject redSunCheckmark; // Checkmark For Red Sun Completion
-    public GameObject seasonsCheckmark; // Checkmark For Seasons Completion
+    public GameObject planetNavCheckmark;
+    public GameObject redSunCheckmark;
+    public GameObject seasonsCheckmark;
 
     private int currentIndex = 0;
 
     private void Start()
     {
-        // PLANET NAV CHECKMARK
+        RefreshProgress();
+    }
+
+    public void RefreshProgress()
+    {
+        // Selection is owned by the task menu, not automatic EventSystem stick navigation.
+        foreach (Selectable option in options)
+            if (option != null) option.navigation = new Navigation { mode = Navigation.Mode.None };
         if (planetNavCheckmark != null)
         {
-            planetNavCheckmark.SetActive(PlanetNavProgress.planetNavCompleted); // Sets Planet Nav Checkmark Based On PlanetNavProgress
+            planetNavCheckmark.SetActive(PlanetNavProgress.planetNavCompleted);
         }
 
-        // RED SUN CHECKMARK
         if (redSunCheckmark != null)
         {
-            redSunCheckmark.SetActive(RedSunProgress.redSunCompleted); // Sets Red Sun Checkmark Based On RedSunProgress
+            redSunCheckmark.SetActive(RedSunProgress.redSunCompleted);
         }
 
-        // SEASONS CHECKMARK
         if (seasonsCheckmark != null)
         {
-            seasonsCheckmark.SetActive(SeasonsProgress.seasonsCompleted); // Sets Seasons Checkmark Based On SeasonsProgress
+            seasonsCheckmark.SetActive(SeasonsProgress.seasonsCompleted);
         }
 
         // Ensure only one highlight starts active
         UpdateHighlight();
 
-        // Select first option
-        if (options.Count > 0 && options[0] != null)
-        {
-            options[0].Select();
-        }
+        SelectCurrent();
     }
 
     public void MoveDown()
@@ -82,7 +83,7 @@ public class TabletMenu : MonoBehaviour
     public void ConfirmCurrent()
     {
         var option = GetCurrentOption();
-        if (option == null)
+        if (option == null || !option.IsActive() || !option.IsInteractable())
         {
             Debug.LogWarning("[TabletMenu] ConfirmCurrent called but no current option.");
             return;
@@ -105,7 +106,6 @@ public class TabletMenu : MonoBehaviour
         {
             if (EventSystem.current != null)
                 EventSystem.current.SetSelectedGameObject(option.gameObject);
-            Debug.Log("[TabletMenu] Selected: " + option.name);
         }
     }
 
